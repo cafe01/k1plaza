@@ -1,0 +1,6 @@
+Repository [% payload.repository.full_name %] deployed to [% hostnames.join(', ') %].
+
+Commit: "[% payload.head_commit.message %]" ([% payload.head_commit.id %])
+
+Files purged from Cloudflare's cache:
+[% purged_urls.join("\n") %]

@@ -1,0 +1,3 @@
+[% data = form.value -%]
+
+Email: [% data.email %]

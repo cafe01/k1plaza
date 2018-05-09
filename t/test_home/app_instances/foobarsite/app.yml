@@ -1,0 +1,48 @@
+sitemap:
+  root: index
+  default_locale: pt
+  locales:
+    - pt
+    - en
+  page:
+    - path: index
+      title: Início
+
+    - path: artigos
+      title: Artigos
+      widget_args: blog
+
+    - path: path
+      path_only: true
+      page:
+        - path: foo
+          title: Foo
+          template: inner_page
+        - path: bar
+          title: Bar
+          template: inner_page
+          page:
+            - path: baz
+              title: Baz
+              template: inner_page
+
+
+
+widgets:
+  Gallery:
+    slider:
+      title: Home Slider
+  Blog:
+    blog:
+      title: Blog
+
+
+form:
+  contato:
+    fields:
+      - { name: "name", type: "text", required: 1 }
+      - { name: "email", type: "email", required: 1 }
+      - { name: "message", type: "text", required: 1 }
+    action:
+      Test:
+        foo: bar

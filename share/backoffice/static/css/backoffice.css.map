@@ -1,0 +1,9 @@
+{
+	"version": 3,
+	"file": "backoffice.css",
+	"sources": [
+		"../sass/backoffice.scss"
+	],
+	"names": [],
+	"mappings": "AAEA,AAAA,IAAI,CAAC;EACD,UAAU,EAAE,KAAK,GACpB;;AAED,AAAA,CAAC,CAAA,AAAA,QAAC,AAAA,EAAU;EACR,OAAO,EAAE,IAAI,GAChB"
+}

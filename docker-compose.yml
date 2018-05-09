@@ -1,0 +1,42 @@
+version: "3"
+services:
+  app:
+    image: cafe01/k1plaza
+    container_name: k1plaza
+    depends_on:
+      - db
+    networks:
+      - k1plaza
+    ports:
+      - "3000:3000"
+    volumes:
+      - "./websites:/projects"
+      - "uploads:/k1plaza/file_storage"
+  db:
+    image: mysql:5.7
+    container_name: k1plaza_mysql
+    networks:
+      - k1plaza
+    ports:
+      - "3306:3306"
+    volumes:
+      - "db-data:/var/lib/mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: P@ssw0rd
+      MYSQL_DATABASE: k1plaza_development
+      MYSQL_USER: k1plaza
+      MYSQL_PASSWORD: P@ssw0rd
+  # worker:
+  #   image: k1plaza
+  #   container_name: k1plaza_worker
+  #   entrypoint: ["./script/k1plaza", "minion", "worker"]
+  #   networks: ["k1plaza"]
+  #   ports: []
+  #   volumes:
+  #     - "./websites:/projects"
+
+networks:
+  k1plaza:
+volumes:
+  db-data:
+  uploads:

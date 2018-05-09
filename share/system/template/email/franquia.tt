@@ -1,0 +1,13 @@
+[% data = form.value -%]
+
+Primeiro nome: [% data.firstname %]
+Sobrenome: [% data.lastname %]
+E-Mail: [% data.email %]
+Endereço: [% data.address %]
+Cidade: [% data.city %]
+Estado: [% data.state %]
+CEP: [% data.postcode %]
+Telefone: [% data.phone %]
+Celular: [% data.celphone %]
+Data Nasc.: [% data.birthdate %]
+Capital líquido para investimento: [% data.netcapital %]

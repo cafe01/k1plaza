@@ -1,0 +1,48 @@
+[% data = form.value -%]
+
+Empresa: [% data.empresa %]
+Telefone: [% data.telefone %]
+Email: [% data.email %]
+Endereço: [% data.endereco %]
+Cidade / Estado: [% data.cidade %]
+Informações adicionais: [% data.informacoes_adicionais %]
+
+
+Tipo do Projeto: [% data.tipo_do_projeto %]
+
+
+Orçar logotipo: [% data.possui_logotipo %]
+Orçar textos: [% data.possui_texto %]
+Possui fotos: [% data.possui_foto %]
+Domínio registrado: [% data.possui_dominio %]
+Possui Hospedagem: [% data.possui_hospedagem %]
+Websites referência: [% data.referencia %]
+
+
+Administrador de Conteúdo: [% data.administrador_conteudo %]
+Suporte a Dispositivos Móveis: [% data.dispositivos_moveis %]
+Estatísticas em Tempo Real: [% data.google_analytics %]
+Área Restrita: [% data.intranet %]
+Sistema de Busca Avançada: [% data.busca_avancada %]
+Línguas Estrangeiras: [% data.linguas_estrangeiras %]
+Formulários Especiais: [% data.formularios_especiais %]
+Cadastro de E-mails: [% data.cadastro_email %]
+Slideshow / Carrossel de Mídias: [% data.slideshow %]
+Blog: [% data.blog %]
+Galeria de Mídias: [% data.galeria %]
+Agenda / Calendário: [% data.calendario %]
+Integração com Redes Sociais: [% data.redes_sociais %]
+Integração com Youtube: [% data.youtube %]
+Integração com Soundcloud: [% data.soundcloud %]
+Integração com Twitcam: [% data.twitcam %]
+Integração com Picasa: [% data.picasa %]
+Integração com Blog Externo: [% data.blog_externo %]
+Nuvem de Tags: [% data.nuvem_tags %]
+Vídeos e Áudio: [% data.video_audio %]
+Pagamento Online: [% data.pagamento_online %]
+Otimização para Mecanismos de Pesquisa: [% data.seo %]
+Integração com Google Places for Business: [% data.google_places %]
+
+Outros Recursos: [% data.outros_recursos %]
+
+Arquivo incluído: [% data.envio_arquivo %]

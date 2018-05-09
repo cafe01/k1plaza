@@ -1,0 +1,82 @@
+<uib-tabset active="vm.wizardPage">
+
+    <uib-tab index="0">
+
+        <div class="jumbotron">
+            <h1 class="display-4">Bem Vindo ao K1Plaza!</h1>
+            <p class="lead">Vamos configurar seu ambiente de desenvolvimento.</p>
+            <hr class="my-4">
+            <p>Para proseguir, é necessário que você possua uma conta no <a href="http://github.com" target="_blank">GitHub</a>.</p>
+            <p class="lead">
+                <a ng-click="vm.wizardPage = vm.wizardPage + 1" href="#" class="btn btn-primary btn-lg" role="button"><i class="fa fa-fw fa-thumbs-up"></i> Já Possuo</a>
+                <a class="btn btn-dark btn-lg" href="http://github.com" target="_blank" role="button"><i class="fab fa-fw fa-github"></i> Criar minha conta </a>
+            </p>
+        </div>
+
+    </uib-tab>
+
+    <uib-tab index="1">
+
+        <div class="alert alert-secondary">
+            <p>Como esse é um ambiente de desenvolvimento local, não é possível usar a forma tradicional (via <a target="_blank" href="https://pt.wikipedia.org/wiki/OAuth">OAuth</a>) para conectarmos com sua conta do GitHub.</p>
+            <p>Para essas situações o GitHub fornece o recurso <a target="_blank" href="https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/">Personal access tokens</a>, que permite que você crie um token OAuth manualmente para usar em scripts ou ferramentas como o K1Plaza.</p>
+        </div>
+
+
+        <h2>1. Acessar seu painel de configurações no GitHub</h2>
+        <p>
+             <a target="_blank" href="https://github.com/settings/tokens" class="btn btn-sm"><i class="fab fa-github"></i> Settings > Developer Settings > Personal Access Token <i class="fa fa-external-link-alt"></i></a>
+        </p>
+
+
+        <h2>2. Criar novo token</h2>
+        <p>Na página <b class="font-italic">Personal Access Tokens</b>, clique em <button class="btn btn-sm btn-secondary" disabled>Generate new token</button> para abrir o wizard.                        </p>
+        <p>Preencha com as seguintes informações:</p>
+
+        <table class="table">
+            <thead>
+                <tr class="font-weight-bold">
+                    <td style="width:11em">Campo</td>
+                    <td>Valor</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="width:11em">Token description</td>
+                    <td>K1Plaza Developer</td>
+                </tr>
+                <tr>
+                    <td>Select scopes</td>
+                    <td><input type="checkbox" checked disabled> repo, <input type="checkbox" checked disabled> user:read, <input type="checkbox" checked disabled> user:email</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <a class="btn btn-light mb-2" target="screenshot" href="/images/github_settings_tokens_new.png">
+            <i class="fa fa-search"></i> Ver screenshot
+        </a>
+
+        <div class="clearfix"></div>
+
+
+        <h2>3. Configurar o K1Plaza com seu token</h2>
+
+        <p>Esse token será armazenado e utilizado apenas no seu ambiente local de desenvolvimento.</p>
+
+        <div class="mb-5">
+            <input type="text" class="form-control mb-2" ng-model="newAccessToken" placeholder="Seu token">
+            <button class="btn btn-lg btn-primary" ng-disabled="!newAccessToken || vm.loading" ng-click="vm.updateAccessToken(newAccessToken)">Salvar Access Token</button>
+        </div>
+
+        <div class="alert alert-danger">
+            <b>Nunca compartilhe esse token com ninguem.</b>
+            Você pode deletar ou recriar esse token a qualquer momento no <a class="text-secondary" target="_blank" href="https://github.com/settings/tokens">GitHub</a>.
+        </div>
+
+        <div class="alert alert-primary">
+            Para saber mais sobre o que cada scope significa, <a href="https://developer.github.com/apps/building-oauth-apps/scopes-for-oauth-apps/">clique aqui. <i class="fa fa-external-link-alt"></i></a>
+        </div>
+
+    </uib-tab>
+
+</uib-tabset>

@@ -1,0 +1,10 @@
+{
+	"version": 3,
+	"file": "screen.css",
+	"sources": [
+		"../sass/screen.scss",
+		"../sass/_partial.scss"
+	],
+	"names": [],
+	"mappings": "ACAA,AAAA,KAAK,CAAC;EACF,KAAK,EDDD,KAAK,GCEZ"
+}

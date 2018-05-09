@@ -1,0 +1,73 @@
+
+
+<!-- <h2 class="text-muted  mb-4"><i class="fa fa-cog"></i> Configurações</h2> -->
+
+<uib-tabset active="0" vertical="true">
+
+    <uib-tab index="0">
+        <uib-tab-heading><i class="fab fa-github"></i> GitHub</uib-tab-heading>
+
+        <!-- user card -->
+        <div class="row mt-4">
+            <div class="col-3">
+                <img class="mw-100" ng-src="{{ vm.user.avatar_url }}" alt="Card image cap">
+            </div>
+            <div class="col-9">
+                <div class="card mt-2">
+                    <div class="card-body">
+                        <h5 class="card-title"><a class="text-dark" target="_blank" ng-href="{{ vm.user.html_url }}"><i class="fab fa-github"></i> {{ vm.user.name }}</a></h5>
+                        <h6 class="card-subtitle mb-2 text-muted">
+                            {{ vm.user.email }}
+                        </h6>
+                        <p class="card-text">{{ vm.user.bio || vm.user.company }}</p>
+                        <a target="_blank" href="https://github.com/settings/profile" class="card-link">Editar Perfil</a>
+                        <a target="_blank" ng-href="{{ vm.user.html_url }}?tab=repositories" class="card-link">Ver Repositórios</a>
+                        <a target="_blank" href="https://github.com/settings/tokens" class="card-link">Gerenciar Tokens</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- change token box -->
+        <div class="alert alert-success mt-4">
+
+            <h3 ng-show="vm.settings.github_access_token">Seu token está configurado.</h3>
+            <button class="btn btn-secondary" ng-click="changeToken = true" ng-show="!changeToken"><i class="fab fa-github"></i> Alterar token</button>
+            <div class="input-group" ng-show="changeToken">
+                <button class="btn btn-primary" ng-click="vm.updateAccessToken(newToken)" ng-disabled="!newToken || vm.loading">
+                    <i class="fab fa-github"></i>  Salvar novo token</button>
+                <input type="text" class="form-control" ng-model="newToken" placeholder="Novo GitHub token">
+            </div>
+
+        </div>
+    </uib-tab>
+
+
+    <!-- tab: ssh keys -->
+    <uib-tab index="1">
+        <uib-tab-heading><i class="fa fa-cog"></i> K1Plaza</uib-tab-heading>
+        <table class="table mt-4">
+            <tbody>
+                <tr>
+                    <td style="width:15em"><h3>Login automatico</h3></td>
+                    <td>
+                        <div class="btn-group">
+                            <label class="btn btn-primary" ng-click="vm.save()" ng-disabled="vm.loading" ng-model="vm.settings.disable_autologin" uib-btn-radio="0">Sim</label>
+                            <label class="btn btn-primary" ng-click="vm.save()" ng-disabled="vm.loading" ng-model="vm.settings.disable_autologin" uib-btn-radio="1">Não</label>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </uib-tab>
+
+    <!-- tab: reset -->
+    <uib-tab index="2">
+        <uib-tab-heading>Reset</uib-tab-heading>
+        <div class="alert alert-danger mt-4">
+            <p>Clique no botão abaixo para remover a conexão com sua conta do GitHub.</p>
+            <button class="btn btn-lg btn-block btn-danger" ng-click="vm.resetSettings()" ng-disabled="vm.loading">Resetar configurações</button>
+        </div>
+    </uib-tab>
+
+</uib-tabset>

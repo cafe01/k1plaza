@@ -1,0 +1,160 @@
+<x-wrap>
+
+    <div ng-controller="WebsiteSingle as vm" ng-cloak>
+
+        <script data-plift-script="prepare app by id">
+            var appid = tx.stash('appid'),
+                app = tx.app().schema().resultset('AppInstance').find(appid)
+
+            if (app) {
+                element.attr('data-app', JSON.stringify(app.as_hashref()))
+            }
+        </script>
+
+        <div class="row">
+
+            <div class="col-12 col-md-8 mb-4">
+                <h1>{{ vm.app.name }} </h1>
+                <a class="badge badge-default" ng-href="http://{{ vm.app.canonical_alias }}" target="_blank">http://{{ vm.app.canonical_alias }}</a>
+            </div>
+
+            <div class="col-12 col-md-4 mv-4">
+                <button class="btn btn-secondary" title="Deploy latest version" ng-click="vm.deployRepository()">Deploy</button>
+            </div>
+
+
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        Administradores
+                    </div>
+                    <div class="card-block">
+
+                        <p class="card-text mb-4" ng-show="vm.admins.length == 0">Nenhum administrador cadastrado.</p>
+
+                        <div class="row no-gutter text-muted" ng-repeat="item in vm.admins" >
+                            <div class="col">
+                                <i class="fa fa-key"></i> {{ item.first_name + ' ' + item.last_name }}
+                                <div><small>{{ item.email }}</small></div>
+                            </div>
+
+                            <div class="col text-right">
+                                <button class="btn btn-sm btn-danger" title="Remover role 'instance_admin' deste usuário." ng-click="vm.removeUserRole(item, 'instance_admin')">
+                                    <i class="fa fa-remove"></i></button>
+                            </div>
+
+                            <div class="col-12" ng-show="!$last"><hr></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        <button class="btn btn-sm btn-primary" ng-click="vm.createHostname()">+ hostname</button>
+                    </div>
+
+                    <div class="card-block" ng-show="vm.hosts.length == 0">
+                        <p class="card-text mb-4">Nenhum hostname cadastrado.</p>
+                    </div>
+
+                    <div class="card-block" ng-cloak>
+
+                        <div class="row no-gutter" ng-repeat="item in vm.hosts" >
+                            <div class="col">
+                                <a class="text-muted" ng-href="http://{{item.name}}" target="_blank">http://{{item.name}}</a>
+                                <div class="mt-1">
+                                    <span class="badge badge-default" ng-show="vm.app.canonical_alias == item.name">Principal</span>
+                                </div>
+                            </div>
+
+                            <div class="col text-right">
+                                <div class="btn-group" data-toggle="buttons">
+                                    <label class="btn btn-secondary btn-sm" ng-class="{ 'active': item.environment == 'development' }" ng-click="vm.setHostEnvironment(item, 'development')">
+                                        <input type="radio" name="environment" id="opt-{{ite.id}}-dev" autocomplete="off" ng-checked="item.environment == 'development'">Dev
+                                    </label>
+                                    <label class="btn btn-secondary btn-sm" ng-class="{active: item.environment == 'production'}" ng-click="vm.setHostEnvironment(item, 'production')">
+                                        <input type="radio" name="environment" id="opt-{{ite.id}}-prod" autocomplete="off" ng-checked="item.environment == 'production'">Prod
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <a href class="btn btn-sm btn-secondary" ng-click="vm.setCanonicalHost(item.name)" ng-show="vm.app.canonical_alias != item.name">Tornar principal</a>
+                                <a href class="btn btn-sm btn-danger" ng-click="vm.deleteHost(item)" ng-show="vm.app.canonical_alias != item.name">Deletar</a>
+                            </div>
+
+                            <div class="col-12" ng-show="!$last"><hr></div>
+                        </div>
+                        <!-- <ul class="list-group list-group-flush">
+                            <li class="list-group-item" ng-repeat="item in vm.hosts">
+                            </li>
+                        </ul> -->
+
+
+
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-12 mb-4">
+                <div class="card">
+                    <div class="card-header">
+                        Usuários
+                    </div>
+                    <div class="card-block" ng-cloak>
+                        <!-- <div class="form-group mb-4">
+                            <input type="text" class="form-control" placeholder="Procurar">
+                        </div> -->
+                        <p class="card-text mb-4" ng-show="vm.users.length == 0">Nenhum usuário cadastrado.</p>
+
+                        <div class="row" ng-repeat="u in vm.users">
+
+                            <div class="col" style="max-width:50px">
+                                <div class="dropdown">
+                                  <button class="btn btn-secondary btn-sm" type="button" data-toggle="dropdown">
+                                    <i class="fa fa-chevron-down"></i>
+                                  </button>
+                                  <div class="dropdown-menu">
+                                      <h6 class="dropdown-header">Ações</h6>
+                                      <a class="dropdown-item" ng-click="vm.addUserRole(u, 'instance_admin')"><i class="fa fa-fw fa-key"></i> Tornar administrador</a>
+                                      <a class="dropdown-item" ng-click="vm.addUserRole(u)"><i class="fa fa-fw"></i> Adicionar role</a>
+                                      <a class="dropdown-item" ng-click="vm.removeUserRole(u)"><i class="fa fa-fw"></i> Remover role</a>
+                                  </div>
+                                </div>
+                            </div>
+
+                            <div class="col">
+                                <h5>
+                                    <i class="fa fa-user"></i>
+                                    {{ u.first_name + ' ' + u.last_name}}
+                                    <small><span class="badge badge-default mr-2" title="Role"
+                                            ng-class="{ 'badge-danger': role.rolename.match('admin') }"
+                                            ng-repeat="role in u.roles">{{ role.rolename }}</span></small>
+                                </h5>
+
+                                <div class="small text-muted">
+                                    {{ u.email }}
+                                </div>
+                            </div>
+
+
+                            <div class="col-12" ng-show="!$last"><hr></div>
+
+
+
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+</x-wrap>

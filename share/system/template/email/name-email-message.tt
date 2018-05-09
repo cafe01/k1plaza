@@ -1,0 +1,7 @@
+[% data = form.value -%]
+
+Nome: [% data.name %]
+Email: [% data.email %]
+Assunto: [% data.subject %]
+
+[% data.message %]

@@ -1,0 +1,134 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <title>Painel de Controle</title>
+    <link rel="stylesheet" type="text/css" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+    <link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:300italic,400italic,700italic,400,300,700|Roboto:400,500,700,300,300italic,400italic,500italic,700italic' rel='stylesheet' type='text/css'>
+
+    <style>
+
+        body {
+            overflow-y: hidden;
+        }
+
+        #loading-mask {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #f2f2f2;
+            text-align: center;
+            display: table;
+            z-index: 1000;
+        }
+
+        #loading-mask i {
+            font-size: 60px;
+            vertical-align: middle;
+            display: table-cell;
+        }
+
+        ::-webkit-scrollbar {
+            background-color: transparent;
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #cacaca;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #aaa;
+        }
+
+        .x-main-menu .menu-item {
+            transition-property: transform;
+            transition-duration: 0.2s;
+            transition-timing-function: ease-out;
+            opacity:0;
+        }
+
+        .x-main-menu .menu-item.sub-item {
+            font-size: 13px;
+            padding: 10px 5px;
+            background-color: #999;
+        }
+
+        .x-main-menu .menu-item.sub-item i {
+            font-size: 15px;
+        }
+
+        .x-main-menu .menu-item.system-item {
+            font-size: 12px;
+            padding: 10px 5px;
+        }
+
+        .x-main-menu .menu-item.system-item i {
+            font-size: 13px;
+        }
+
+        .x-main-menu .menu-item {
+            transform: translateX(-100%);
+        }
+
+        .menu-ready .x-main-menu .menu-item {
+            transform: translateX(0);
+            opacity:1;
+        }
+
+
+    </style>
+
+    <script data-plift-script="setup backend">
+        var appConfig = tx.app_instance().config(),
+            appData = tx.api('Data').list().result().items,
+            config = appConfig.backend || {},
+            // metrics = tx.api('Analytics').get_metrics(),
+            metrics = {},
+            backendMode = appConfig.backend_mode || 'production',
+            scripts;
+
+        config.devMode = backendMode == 'development'
+        config.locales = appConfig.locales
+        config.name = config.name  || appConfig.name || ''
+        config.appData = appData
+        config.csrf_token = tx.csrf_token ? tx.csrf_token() : tx.helpers().csrf_token()
+
+        // cms
+        config.templates = appConfig.templates || []
+        config.enable_cms = appConfig.enable_cms
+
+        // metrics
+        config.availableMetrics = []
+        Object.keys(metrics).sort().forEach(function(id){
+            config.availableMetrics.push({ id: id, name: metrics[id].name });
+        });
+
+        // widgets
+        config.widgets = tx.api('Widget').list_active().items;
+
+        // backendConfig
+        $('<script/>').text("backendConfig = " + JSON.stringify(config))
+                      .append_to(element);
+
+        // app script
+        $('<script/>').attr("src", backendMode + "/microloader.js")
+                      .append_to(element);
+
+    </script>
+
+</head>
+<body>
+
+    <div id="loading-mask">
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+    </div>
+
+
+</body>
+</html>

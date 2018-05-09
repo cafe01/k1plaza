@@ -1,0 +1,83 @@
+<x-wrap>
+
+    <div ng-controller="Websites as vm">
+
+        <div class="row mb-4 mt-4">
+            <div class="col">
+                <button class="btn btn-primary" ng-disabled="vm.showCreateApp || vm.loading" ng-click="vm.newApp()">Cadastrar Website</button>
+            </div>
+            <div class="col-3 text-right">
+                <input type="text" class="form-control" placeholder="Procurar" ng-model="appQuery">
+            </div>
+        </div>
+
+        <div class="row">
+
+            <div class="col-12 mb-4 collapse" ng-class="{ show: vm.showCreateApp }">
+                <form name="vm.form">
+
+                    <div class="form-group">
+                        <label>Nome do projeto</label>
+                        <input type="text" class="form-control" name="name" ng-model="vm.newApp.name" required>
+                        <small class="form-text text-muted">Ex: NomeDoSite.</small>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label>GitHub URL</label>
+                        <input type="text" class="form-control" name="repository_url" ng-model="vm.newApp.repository_url">
+                        <small class="form-text text-muted">Ex: git@github.com:cafe01/website-kreato.git</small>
+                    </div>
+
+                    <div class="form-group" >
+                        <label>Hostname</label>
+                        <input type="text" class="form-control mb-2" ng-repeat="item in vm.newApp.hostnames" ng-model="item.name">
+                        <a href="#" ng-click="vm.newAppHostname()">+ hostname</a>
+                    </div>
+
+                </form>
+
+                <div class="col-12 button-group">
+                    <button class="btn btn-default" ng-class="{ 'btn-primary': vm.form.$valid }" ng-click="vm.createApp()">Enviar</button>
+                    <button class="btn btn-default" ng-click="vm.showCreateApp = false">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="row">
+            <div class="col">
+                <table class="table">
+
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>Nome</th>
+                            <th>Domínio Principal</th>
+                            <th>Cadastrado em</th>
+                        </tr>
+                    </thead>
+
+                    <tbody ng-cloak>
+                        <tr ng-show="vm.loading">
+                            <th>Carregando...</th>
+                        </tr>
+                        <tr ng-repeat="website in vm.websites | filter:appQuery " class="table-{{website.hightlight}}">
+                            <th scope="row">
+                                <a class="text-muted" ng-href="/app/{{ website.id }}">{{ website.name }}</a>
+                                <div>
+                                    <span class="badge badge-info" ng-show="website.is_managed">managed</span>
+                                    <span class="badge badge-default" ng-show="website.base_dir">local dir</span>
+                                </div>
+                            </th>
+                            <td><a class="text-muted" ng-href="http://{{ website.canonical_alias }}" target="_blank">{{ website.canonical_alias }}</a></td>
+                            <td>{{ website.created_at.calendar() }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</x-wrap>

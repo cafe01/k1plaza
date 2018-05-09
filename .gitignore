@@ -1,0 +1,15 @@
+/file_storage
+/.vagrant
+/repositories
+/websites
+/managed_apps
+/k1plaza.conf
+/provisioning/*.retry
+/*.log
+/*.sql
+/log
+**/.sass-cache/
+/app_instances
+/temp
+/*.csv
+/docker-compose.override.yml
