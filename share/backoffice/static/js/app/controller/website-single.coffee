@@ -59,6 +59,7 @@ backoffice.controller 'WebsiteSingle', class WebsiteSingle
 
 
     addUserRole: (user, roleName) ->
+        console.log arguments
         unless roleName
             roleName = prompt('Digite a role a ser adicionada: (ex: instance_admin)')
             return unless roleName

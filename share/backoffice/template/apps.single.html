@@ -32,7 +32,7 @@
 
                         <p class="card-text mb-4" ng-show="vm.admins.length == 0">Nenhum administrador cadastrado.</p>
 
-                        <div class="row no-gutter text-muted" ng-repeat="item in vm.admins" >
+                        <div class="row no-gutter text-muted" ng-repeat="item in vm.admins">
                             <div class="col">
                                 <i class="fa fa-key"></i> {{ item.first_name + ' ' + item.last_name }}
                                 <div><small>{{ item.email }}</small></div>
@@ -43,7 +43,9 @@
                                     <i class="fa fa-remove"></i></button>
                             </div>
 
-                            <div class="col-12" ng-show="!$last"><hr></div>
+                            <div class="col-12" ng-show="!$last">
+                                <hr>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -62,7 +64,7 @@
 
                     <div class="card-block" ng-cloak>
 
-                        <div class="row no-gutter" ng-repeat="item in vm.hosts" >
+                        <div class="row no-gutter" ng-repeat="item in vm.hosts">
                             <div class="col">
                                 <a class="text-muted" ng-href="http://{{item.name}}" target="_blank">http://{{item.name}}</a>
                                 <div class="mt-1">
@@ -85,7 +87,9 @@
                                 <a href class="btn btn-sm btn-danger" ng-click="vm.deleteHost(item)" ng-show="vm.app.canonical_alias != item.name">Deletar</a>
                             </div>
 
-                            <div class="col-12" ng-show="!$last"><hr></div>
+                            <div class="col-12" ng-show="!$last">
+                                <hr>
+                            </div>
                         </div>
                         <!-- <ul class="list-group list-group-flush">
                             <li class="list-group-item" ng-repeat="item in vm.hosts">
@@ -112,21 +116,8 @@
 
                         <div class="row" ng-repeat="u in vm.users">
 
-                            <div class="col" style="max-width:50px">
-                                <div class="dropdown">
-                                  <button class="btn btn-secondary btn-sm" type="button" data-toggle="dropdown">
-                                    <i class="fa fa-chevron-down"></i>
-                                  </button>
-                                  <div class="dropdown-menu">
-                                      <h6 class="dropdown-header">Ações</h6>
-                                      <a class="dropdown-item" ng-click="vm.addUserRole(u, 'instance_admin')"><i class="fa fa-fw fa-key"></i> Tornar administrador</a>
-                                      <a class="dropdown-item" ng-click="vm.addUserRole(u)"><i class="fa fa-fw"></i> Adicionar role</a>
-                                      <a class="dropdown-item" ng-click="vm.removeUserRole(u)"><i class="fa fa-fw"></i> Remover role</a>
-                                  </div>
-                                </div>
-                            </div>
 
-                            <div class="col">
+                            <div class="col p-3">
                                 <h5>
                                     <i class="fa fa-user"></i>
                                     {{ u.first_name + ' ' + u.last_name}}
@@ -135,13 +126,14 @@
                                             ng-repeat="role in u.roles">{{ role.rolename }}</span></small>
                                 </h5>
 
-                                <div class="small text-muted">
-                                    {{ u.email }}
+                                <div class="small">
+                                    <span class="text-muted">{{ u.email }}</span>
+                                    <button class="btn btn-sm btn-secondary" ng-click="vm.addUserRole(u, 'instance_admin')">Tornar admin</button>
                                 </div>
+
+                            <div class="col-12" ng-show="!$last">
+                                <hr>
                             </div>
-
-
-                            <div class="col-12" ng-show="!$last"><hr></div>
 
 
 

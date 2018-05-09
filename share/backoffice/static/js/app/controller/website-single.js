@@ -104,6 +104,7 @@ backoffice.controller('WebsiteSingle', WebsiteSingle = (function() {
 
   WebsiteSingle.prototype.addUserRole = function(user, roleName) {
     var i, len, r, ref, roles;
+    console.log(arguments);
     if (!roleName) {
       roleName = prompt('Digite a role a ser adicionada: (ex: instance_admin)');
       if (!roleName) {
