@@ -26,10 +26,10 @@ module.exports = Form = (function() {
   };
 
   function Form(config) {
-    var f, field;
+    var HiddenField, f, field;
     config = config || {};
     this.name = config.name || 'defultName';
-    this.fields = [];
+    this.fields = this.fields || [];
     if (Array.isArray(config.fields)) {
       this.fields = (function() {
         var i, len, ref, results;
@@ -43,6 +43,10 @@ module.exports = Form = (function() {
         return results;
       })();
     }
+    HiddenField = require('k1/form/field/hidden');
+    this.fields.push(new HiddenField({
+      name: '_csrf'
+    }));
     if (typeof config.action === "function") {
       this.action = config.action;
     }
@@ -102,6 +106,7 @@ module.exports = Form = (function() {
     form = $('<form/>');
     form.attr({
       action: "/.form/" + this.name,
+      method: "post",
       name: this.name
     });
     ref = this.fields;

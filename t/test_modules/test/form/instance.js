@@ -12,7 +12,7 @@ var Form = require("k1/form"),
 var fields = form.fields;
 test.ok(Array.isArray(fields), "fields array")
 
-test.is(fields.length, 3, 'field count')
+test.is(fields.length, 4, 'field count')
 
 
 test.is(form.name, 'testForm', 'form name')
@@ -22,7 +22,7 @@ test.like(form.getField("message"), { name: 'message', type: 'textarea', require
 
 
 
-var values = { name: 'User', email: 'user@example.com', message: "hello!" }
+var values = { name: 'User', email: 'user@example.com', message: "hello!", _csrf: 'foo' }
 var result = form.process(values)
 
 test.is(result.success, true, 'process - success')

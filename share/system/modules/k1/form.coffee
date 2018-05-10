@@ -25,12 +25,16 @@ module.exports = class Form
         @name = config.name or 'defultName'
 
         # fields
-        @fields = []
+        @fields = @fields or []
         if Array.isArray(config.fields)
             @fields = for f in config.fields
                 field = _createField(f)
                 # console.log field
                 field
+
+        # csrf token
+        HiddenField = require('k1/form/field/hidden')
+        @fields.push new HiddenField( name: '_csrf' )
 
         # action
         if typeof config.action == "function"
@@ -82,6 +86,7 @@ module.exports = class Form
         form = $('<form/>')
         form.attr
             action:  "/.form/#{@name}"
+            method: "post"
             name: @name
 
         for field in @fields

@@ -12,6 +12,6 @@ var Form = require("k1/form"),
 
 var rendered = form.render();
 
-test.is(rendered.find('input').size(), 2, 'input elements')
+test.is(rendered.find('input').size(), 3, 'input elements')
 test.is(rendered.find('textarea').size(), 1, 'textarea')
-// test.diag(rendered.as_html())
+test.diag(rendered.as_html())
