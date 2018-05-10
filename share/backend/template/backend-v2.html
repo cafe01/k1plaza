@@ -117,7 +117,7 @@
                       .append_to(element);
 
         // app script
-        $('<script/>').attr("src", backendMode + "/microloader.js")
+        $('<script/>').attr("src", tx.url_for(backendMode + "/microloader.js").to_abs().to_string())
                       .append_to(element);
 
     </script>

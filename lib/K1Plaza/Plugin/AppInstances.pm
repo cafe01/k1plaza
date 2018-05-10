@@ -46,6 +46,9 @@ sub _setup_backend {
     unshift @{$app->static->paths},   map { $app->home->child("share/$_/static")->to_string }   qw( backend system );
     unshift @{$app->renderer->paths}, map { $app->home->child("share/$_/template")->to_string } qw( backend system );
 
+    # share website session
+    $app->sessions->cookie_name('k1plaza');
+
     # routes
     my $r = $app->routes;
 
@@ -111,7 +114,8 @@ sub _around_dispatch {
         $alias = $params->param('domain') || $params->param('state');
         unless ($alias) {
             $log->debug("Missing 'domain' or 'state' parameter for shared auth host!");
-            return;
+            $c->res->code(400);
+            return $c->render(text => "Error: missing 'domain' or 'state' parameter.");
         }
     }
     elsif ($c->is_cdn_host) {

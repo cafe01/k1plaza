@@ -15,19 +15,9 @@ sub process {
 	# prepare links
 	# K1Plaza
 	my %href;
-	if ($req->can('url')) {
-		my $url = $req->url->clone;
-		$href{google} = $url->query([ provider => 'google' ])->to_string;
-		$href{facebook} = $url->query([ provider => 'facebook' ])->to_string;
-	}
-	# K1Plaza
-	else {
-		my $url = $req->uri->clone;
-		$url->query_form({ $url->query_form, provider => 'google' });
-		$href{google} = $url->as_string;
-		$url->query_form({ $url->query_form, provider => 'facebook' });
-		$href{facebook} = $url->as_string;
-	}
+	my $url = $req->url->clone;
+	$href{google}   = $url->query([ provider => 'google' ])->to_abs->to_string;
+	$href{facebook} = $url->query([ provider => 'facebook' ])->to_abs->to_string;
 
     # google login link
     $element->find('a.login-google-link')->attr( href => "$href{google}" );
