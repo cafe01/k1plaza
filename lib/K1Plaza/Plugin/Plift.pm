@@ -6,11 +6,9 @@ use Mojo::Util qw/decode steady_time /;
 use Scalar::Util qw/ weaken /;
 use Data::Printer;
 use Mojo::File qw/ path /;
-use Q1::JavaScript::Context;
 
 __PACKAGE__->attr([qw/ plift config /]);
 
-my $GCID;
 
 sub register {
     my ( $self, $app, $config ) = @_;
@@ -18,18 +16,6 @@ sub register {
     $self->config($config || {});
     my $plift = $self->_build_plift($config);
     $self->plift($plift);
-
-    $GCID = Mojo::IOLoop->recurring(120 => sub {
-        my $loop = shift;
-        my $time = steady_time;
-        my $js = $plift->javascript_context;
-        my $finished = 0;
-        while (not $finished) {
-            $finished = $js->_ctx->idle_notification;
-        }
-        my $took = steady_time - $time;
-        # $app->log->debug("JS Garbage collected. ($took s)");
-    });
 
     $app->helper( plift => sub { $plift });
 
@@ -92,6 +78,8 @@ sub _render {
     # context
     $plift->context($stash);
 
+    $plift->javascript_context($c->js);
+
     # tx ref
     $stash->{tx} = $tx;
     weaken $stash->{tx};
@@ -120,16 +108,11 @@ sub _build_plift {
         filters         => [qw/ EditableContent AppendJavascript CurrentPage OpenGraph AnalyticsMetaTags StaticFiles Truncate LeakCheck Console /],
         enable_profiler => $cfg->{debug},
         debug           => $cfg->{debug},
-        snippet_path    => ["K1Plaza::Snippet"],
-        javascript_context => Q1::JavaScript::Context->new
+        snippet_path    => ["K1Plaza::Snippet"]
     );
 
     $plift;
 }
 
-
-sub DESTROY {
-    Mojo::IOLoop->remove($GCID);
-}
 
 1;

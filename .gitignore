@@ -13,3 +13,4 @@
 /temp
 /*.csv
 /docker-compose.override.yml
+/share/system/static/stylesheets/

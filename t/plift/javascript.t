@@ -9,7 +9,7 @@ use Data::Dumper;
 #use Cwd;
 use Path::Tiny;
 use utf8;
-use Q1::JavaScript::Context;
+use JavaScript::V8::CommonJS;
 
 BEGIN {
     use_ok 'Q1::Web::Template::Plift';
@@ -21,7 +21,7 @@ my $plift = Q1::Web::Template::Plift->new(
     enable_profiler => 0,
     debug => 1,
     filters => [],
-    javascript_context => Q1::JavaScript::Context->new( time_limit => 5, debug => 0 )
+    javascript_context => JavaScript::V8::CommonJS->new
 );
 
 

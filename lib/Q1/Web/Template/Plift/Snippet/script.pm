@@ -9,6 +9,7 @@ use namespace::autoclean;
 has 'script_source', is => 'ro', isa => Str, required => 1;
 has 'description',   is => 'ro', isa => Str, default => '<inline>';
 has 'inline', is => 'ro', isa => Str, default => 0;
+has 'file', is => 'ro', isa => Str;
 
 
 sub profiler_action {
@@ -20,35 +21,38 @@ sub process {
 	my ($self, $element, $engine, $params) = @_;
 
     # parse js
-    my $wrapper = q!
-        var $ = function(){
-            return arguments[0].match(/</) ? engine.parse_html(arguments[0])
-                                           : element.find(arguments[0]);
-        };
+    my $js_code_wrapper = q!
+    (function(){
+        var tx = require('tx'),
+            engine = require('plift'),
+            params = require('params'),
+            element = require('element'),
+            $ = function(stuff){ return stuff.match(/</) ? engine.parse_html(stuff) : element.find(stuff) };
         %s
+    })()
     !;
 
-    $wrapper =~ s/\n/ /g;
+    # parse js
+    $js_code_wrapper =~ s/\n/ /g;
 
+    # console
     my $console_data = ($engine->context->{console} ||= []);
     my %console = map {
         my $cmd = $_;
         $cmd => sub { push @$console_data, [$cmd, @_] }
     } qw/ log info warn error /;
 
-
-    $params = {} if $self->inline;
-
+    # inject modules
+    my $js = $engine->javascript_context;
+    local $js->modules->{tx} = $engine->context->{tx} || {};
+    local $js->modules->{plift} = $engine;
+    local $js->modules->{params} = $self->inline ? {} : $params;
+    local $js->modules->{element} = $self->inline ? $element->parent : $element;
+    local $js->modules->{console} = \%console;
 
     # run code
-    my $code = $engine->javascript_context
-                      ->eval_wrapped(sprintf($wrapper, $self->script_source), $self->description, {
-                          element => $self->inline ? $element->parent : $element,
-                          engine => $engine,
-                          params => $params,
-                          console => \%console,
-                          tx => $engine->context->{tx}
-                      });
+    my $js_code = sprintf($js_code_wrapper, $self->script_source);
+    $js->eval($js_code, $self->description);
 
 	# remove script element
 	$element->detach if $self->inline;

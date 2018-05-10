@@ -425,14 +425,14 @@ sub _instantiate_snippet {
         unless $self->has_javascript_context;
 
     # find javascript snippet
-    my ($js_source, $js_relative_path);
+    my ($js_source, $js_path);
 
     foreach my $include_path (@{ $self->javascript_include_path}) {
         my $file = path("$include_path/$snippet_name.js");
 
         if (-f $file) {
             $js_source = $file->slurp;
-            $js_relative_path = $file->to_rel($include_path)->to_string;
+            $js_path = "$file";
             last;
         }
     }
@@ -444,7 +444,7 @@ sub _instantiate_snippet {
     # screate script snippet
     $self->_resolve_snippet_class('script')->new({
         script_source => $js_source,
-        description => $js_relative_path
+        description => $js_path
     });
 }
 

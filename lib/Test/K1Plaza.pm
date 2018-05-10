@@ -16,7 +16,7 @@ our @EXPORT = (
     @Test2::V0::EXPORT,
     # @Data::Printer::EXPORT,
     qw/
-        p app
+        p app js_test
     /
 );
 
@@ -41,13 +41,40 @@ sub app {
         $app = K1Plaza->new(
             home => Mojo::Home->new("t/test_home/")->to_abs
         );
-        # $app->log->debug("Test app home: ".$app->home);
 
-        $app->schema->deploy({ add_drop_table => 1 });
+        my $js = $app->js;
+        unshift @{$js->paths}, "./share/system/modules", "$FindBin::Bin/test_modules";
+
+        $js->c->bind( test => {
+            is => sub { is shift, shift, shift },
+            like => sub { like shift, shift, shift },
+            ok => sub { ok  shift, shift },
+            diag => sub { diag @_ },
+        });
+
+        # $app->schema->deploy({ add_drop_table => 1 });
     }
 
     $app;
 }
 
+
+sub js_test {
+    my $test = shift;
+
+    subtest $test => sub {
+        eval {
+            my $rv = app->build_controller->js->eval("require('test/$test')");
+        };
+
+        if ($@) {
+
+            p $@->stack;
+            die $@;
+        }
+
+
+    };
+}
 
 1;

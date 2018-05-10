@@ -104,7 +104,7 @@ sub _around_dispatch {
         }
     }
 
-	# find app
+    # resolve alias
     $alias //= $c->req->headers->host;
     $alias =~ s/:\d+$//;
 
@@ -132,6 +132,7 @@ sub _around_dispatch {
         # $log->debug("CDN host detected for alias '$alias', base url is now: ". $c->req->url->base);
     }
 
+	# find app
     if (my $app_instance = $c->api('AppInstance')->instantiate_by_alias($alias)) {
 
         # set app instannce for this request
@@ -147,6 +148,9 @@ sub _around_dispatch {
 
         local $c->app->renderer->{paths} =
             [map { "$_" } @{ $skin_manager->generate_template_include_path($c) }, @{$c->app->renderer->{paths}}];
+
+        # commonjs paths
+        local $c->js->{paths} = [$app_instance->base_dir->to_string];
 
         # add app name to log lines
         my $app_name = $app_instance->name;
