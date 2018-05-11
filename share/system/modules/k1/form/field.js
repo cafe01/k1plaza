@@ -6,17 +6,16 @@ module.exports = FormField = (function() {
 
   htmlAttributes = ['name', 'type', 'id', 'class', 'placeholder', 'value', 'title'];
 
-  FormField.prototype.tag = 'input';
-
-  FormField.prototype.wrapper = {
-    tag: 'div',
-    "class": ''
-  };
-
   function FormField(params) {
     var attr, i, len, match, ref;
     params = typeof params === "object" ? params : {
       name: params
+    };
+    this.tag = params.tag || 'input';
+    this["class"] = params["class"] || 'form-control';
+    this.wrapper = params.hasOwnProperty('wrapper') ? params.wrapper : {
+      tag: 'div',
+      "class": 'form-group'
     };
     this.name = params.name;
     if (!this.name) {
@@ -41,8 +40,18 @@ module.exports = FormField = (function() {
     }
   }
 
+  FormField.prototype.setValue = function(v) {
+    return this.value = v;
+  };
+
+  FormField.prototype.fillElement = function(element) {
+    if (this.hasOwnProperty('value')) {
+      return element.attr('value', this.value);
+    }
+  };
+
   FormField.prototype.render = function() {
-    var $, attr, element, i, len;
+    var $, attr, element, i, len, wrapper;
     $ = require('k1/jquery');
     element = $("<" + this.tag + " />");
     for (i = 0, len = htmlAttributes.length; i < len; i++) {
@@ -54,7 +63,15 @@ module.exports = FormField = (function() {
     if (this.required) {
       element.attr('required', 'required');
     }
-    return element;
+    if (!this.wrapper) {
+      return element;
+    }
+    wrapper = $("<" + this.wrapper.tag + "/>");
+    if (this.wrapper["class"]) {
+      wrapper.add_class(this.wrapper["class"]);
+    }
+    wrapper.append(element);
+    return wrapper;
   };
 
   return FormField;

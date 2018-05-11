@@ -13,6 +13,13 @@ module.exports = TextAreaField = (function(superClass) {
     this.tag = 'textarea';
   }
 
+  TextAreaField.prototype.render = function() {
+    var el;
+    el = TextAreaField.__super__.render.call(this);
+    el.text(this.value);
+    return el.remove_attr('value');
+  };
+
   return TextAreaField;
 
 })(FormField);

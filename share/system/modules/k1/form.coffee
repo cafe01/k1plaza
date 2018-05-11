@@ -22,15 +22,13 @@ module.exports = class Form
         config = config or {}
 
         # name
-        @name = config.name or 'defultName'
+        @name = config.name or @name or 'defultName'
 
         # fields
         @fields = @fields or []
-        if Array.isArray(config.fields)
-            @fields = for f in config.fields
-                field = _createField(f)
-                # console.log field
-                field
+        @fields.push config.fields... if Array.isArray(config.fields)
+        @fields = for field in @fields
+            _createField(field)
 
         # csrf token
         HiddenField = require('k1/form/field/hidden')
@@ -58,7 +56,7 @@ module.exports = class Form
             value = values[field.name]
 
             # required
-            if field.required and !value?
+            if field.required and (!value? or !value.match(/\w/))
                 errors.push
                     message: "Campo obrigatório"
                     field: field.name
@@ -68,12 +66,15 @@ module.exports = class Form
 
             # add valid value
             valid[field.name] = value
-            @getField(field.name).value = value
+            field.setValue(value)
+            # field.value = value
+            # console.log("processed field", @ instanceof Form, field)
 
         # return result
         @processed = true
         @isValid = errors.length == 0
 
+        # console.log "valud fields", valid
         if @isValid
             success: true
             fields: valid
@@ -81,15 +82,27 @@ module.exports = class Form
             success: false
             errors: errors
 
-    render: ->
+    render: (element) ->
         $ = require('k1/jquery')
-        form = $('<form/>')
-        form.attr
+        formEl = element or $('<form/>')
+
+        formEl.attr
             action:  "/.form/#{@name}"
             method: "post"
             name: @name
 
-        for field in @fields
-            field.render().append_to form
+        # render or fill items
+        if formEl.find('input, textarea').size() == 0
+            for field in @fields
+                field.render().append_to formEl
+        else
+            for field in @fields
+                fieldEl = formEl.find("*[name='#{field.name}']")
+                continue unless fieldEl.size()
+                field.fillElement(fieldEl)
 
-        form
+            if formEl.find('input[name="_csrf"]').size() == 0
+                @getField("_csrf").render().append_to formEl
+
+
+        formEl

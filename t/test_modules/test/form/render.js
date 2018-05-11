@@ -12,6 +12,12 @@ var Form = require("k1/form"),
 
 var rendered = form.render();
 
-test.is(rendered.find('input').size(), 3, 'input elements')
 test.is(rendered.find('textarea').size(), 1, 'textarea')
-test.diag(rendered.as_html())
+
+
+// process
+form.process({ name: 'Carlos Fernando' })
+rendered = form.render()
+
+test.is(rendered.find('input[name="name"]').attr('value'), 'Carlos Fernando', 'rendered input value')
+// test.diag(rendered.as_html())

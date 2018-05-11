@@ -35,7 +35,7 @@ has schema => sub {
 sub startup {
     my $self = shift;
 
-    my $config = $self->load_config;
+    my $config = $self->_load_config;
     my $schema = $self->schema;
 
     # log level & format
@@ -133,16 +133,9 @@ sub startup {
         }
     });
 
-    $self->plugin('K1Plaza::Plugin::Apis');
-    $self->plugin('K1Plaza::Plugin::AppInstances');
-    $self->plugin('K1Plaza::Plugin::Plift');
-    $self->plugin('K1Plaza::Plugin::Widgets');
-    $self->plugin('K1Plaza::Plugin::Forms');
-    $self->plugin('K1Plaza::Plugin::Users');
-    $self->plugin('K1Plaza::Plugin::Medias');
-    $self->plugin('K1Plaza::Plugin::ImageScale');
-    $self->plugin('K1Plaza::Plugin::Sitemap'); # must be last
-
+    # Sitemap must be last
+    $self->plugin("K1Plaza::Plugin::$_")
+        for qw/ Apis AppInstances Plift Widgets Forms Users Medias JavaScript ImageScale Sitemap /;
 
     $log->info("K1Plaza started in ".$self->mode." mode.");
 }
@@ -350,14 +343,12 @@ sub _setup_developer {
 
 
 
-
-
-
-sub load_config {
+sub _load_config {
 
     my $app = shift;
+    my $file = $app->home->child('k1plaza.conf');
     $app->plugin( Config => {
-        file    => $app->home->child('k1plaza.conf')->to_string,
+        -f $file ? (file => "$file") : (),
         default => {
             secrets => [],
             default_locale => 'pt',

@@ -4,6 +4,7 @@ use Moo;
 use namespace::autoclean;
 use Data::Dumper;
 use Carp qw/confess/;
+use Data::Printer;
 
 has 'name', is => 'ro', required => 1;
 
@@ -15,6 +16,56 @@ sub profiler_action {
 
 sub process {
     my ($self, $element, $engine) = @_;
+
+
+    # find js form
+    my $js = $engine->javascript_context;
+    if ($js && $js->_resolveModule('form/'.$self->name)) {
+        return $self->_process_js($element, $engine);
+    }
+
+    # native
+    $self->_process_native($element, $engine);
+}
+
+sub _process_js {
+    my ($self, $element, $engine) = @_;
+
+    my $js = $engine->javascript_context;
+    my $tx = $engine->context->{tx};
+    my $token = $tx->csrf_token;
+
+    my $saved = $tx->flash("form-${\ $self->name }");
+
+    local $js->modules->{element} = $element;
+
+    $js->eval(qq(
+        var formLoader = require('k1/form/loader'),
+            element = require('element'),
+            flash = require('k1/flash'),
+            token = require('k1/csrf_token'),
+            params = flash.get("form-${\ $self->name }") || {},
+            form = formLoader.load("${\ $self->name }");
+
+        if (!form) {
+            console.error("<x-form> aborting.")
+            return
+        }
+
+        // process params
+        params["_csrf"] = token
+        form.process(params)
+
+        // render
+        element.get(0).setNodeName('form')
+        form.render(element)
+        1;
+    ));
+}
+
+
+sub _process_native {
+    my ($self, $element, $engine) = @_;
     # confess 'okay';
     my $tx = $engine->context->{tx};
     my $document = $element->document;
@@ -22,7 +73,7 @@ sub process {
 
     # invalid form
     unless ($form) {
-        $element->html('Form inválido: '.$self->name);
+        $element->html('Form desconhecido: '.$self->name);
         return;
     }
 
@@ -109,6 +160,7 @@ sub process {
             if $is_static_form;
     }
 }
+
 
 
 sub _render_error_list {

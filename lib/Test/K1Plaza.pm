@@ -39,11 +39,12 @@ sub app {
 
     unless ($app) {
         $app = K1Plaza->new(
-            home => Mojo::Home->new("t/test_home/")->to_abs
+            home => Mojo::Home->new("t/test_home/")->to_abs,
+            mode => 'test'
         );
 
         my $js = $app->js;
-        unshift @{$js->paths}, "./share/system/modules", "$FindBin::Bin/test_modules";
+        unshift @{$js->paths}, "$FindBin::Bin/test_modules";
 
         $js->c->bind( test => {
             is => sub { is shift, shift, shift },

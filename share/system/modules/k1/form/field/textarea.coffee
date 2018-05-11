@@ -4,3 +4,8 @@ module.exports = class TextAreaField extends FormField
         super(arguments...)
         @type = 'textarea'
         @tag = 'textarea'
+
+    render: ->
+        el = super()
+        el.text(@value)
+        el.remove_attr('value')

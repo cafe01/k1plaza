@@ -150,13 +150,13 @@ sub _around_dispatch {
             [map { "$_" } @{ $skin_manager->generate_template_include_path($c) }, @{$c->app->renderer->{paths}}];
 
         # commonjs paths
-        local $c->js->{paths} = [$app_instance->base_dir->to_string];
+        local $c->js->{paths} = [@{$c->js->{paths}}, $app_instance->base_dir->to_string];
 
         # add app name to log lines
         my $app_name = $app_instance->name;
 
         local $log->{format} = $log->short
-            ? sub { shift; "[" . shift() . "] [$app_name] " . join "\n", @_, '' }
+            ? sub { shift; "[$app_name] [" . shift() . "] " . join "\n", @_, '' }
             : sub { '[' . localtime(shift) . "] [" . shift() . "] [$app_name] " . join "\n", @_, '' };
 
         # mount sitemap

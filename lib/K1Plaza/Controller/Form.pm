@@ -11,6 +11,15 @@ sub process {
 
     # get form
     my $form_name = $c->stash->{form_name};
+    $log->debug("form name: $form_name");
+
+    # js form
+    my $js = $c->js;
+    if ($js->_resolveModule("form/$form_name")) {
+        return $c->_process_js($form_name);
+    }
+
+    # native form (legacy)
     my $form = $c->form( $form_name );
     return $c->reply->not_found unless $form;
 
@@ -89,6 +98,63 @@ sub process {
         }
     );
 }
+
+sub _process_js {
+    my ($c, $form_name) = @_;
+    my $log = $c->log;
+    my $params = $c->req->json || $c->req->params->to_hash;
+
+    $log->info("Processando form '$form_name'. Parametros recebidos:");
+    for my $key (keys %$params) {
+        next if $key eq '_csrf';
+        $log->info(sprintf "%s: %s", $key, $params->{$key} || '""');
+    }
+
+    # TODO validate csrf
+
+    my $js = $c->js;
+    local $js->modules->{params} = $params;
+
+    my $result = $js->eval(qq(
+
+        var params = require('params'),
+            form = require('k1/form/loader').load("$form_name"),
+            result;
+
+        result = form.process(params)
+
+        if (!result.success) {
+
+            delete params['_csrf']
+            require('k1/flash').set('form-$form_name', params)
+        }
+        else {
+            result.data = form.action(result.fields)
+        }
+
+        result;
+    ));
+
+    unless ($result->{success}) {
+
+        $log->error("Form '$form_name' falhou:");
+        for my $e (@{ $result->{errors} || []}) {
+            $log->error("$e->{field}:\t$e->{message}");
+        }
+    }
+
+
+    $c->respond_to(
+        json => { json => $result->{success}
+            ? { success => \1, data => $result->{data} }
+            : { success => \0, errors => $result->{errors} }
+        },
+        any => sub {
+            $c->redirect_to($c->req->headers->referrer || '/')
+        }
+    );
+}
+
 
 sub do_form_actions {
     my ($c, $form) = @_;

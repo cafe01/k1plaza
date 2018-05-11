@@ -26,23 +26,23 @@ module.exports = Form = (function() {
   };
 
   function Form(config) {
-    var HiddenField, f, field;
+    var HiddenField, field, ref;
     config = config || {};
-    this.name = config.name || 'defultName';
+    this.name = config.name || this.name || 'defultName';
     this.fields = this.fields || [];
     if (Array.isArray(config.fields)) {
-      this.fields = (function() {
-        var i, len, ref, results;
-        ref = config.fields;
-        results = [];
-        for (i = 0, len = ref.length; i < len; i++) {
-          f = ref[i];
-          field = _createField(f);
-          results.push(field);
-        }
-        return results;
-      })();
+      (ref = this.fields).push.apply(ref, config.fields);
     }
+    this.fields = (function() {
+      var i, len, ref1, results;
+      ref1 = this.fields;
+      results = [];
+      for (i = 0, len = ref1.length; i < len; i++) {
+        field = ref1[i];
+        results.push(_createField(field));
+      }
+      return results;
+    }).call(this);
     HiddenField = require('k1/form/field/hidden');
     this.fields.push(new HiddenField({
       name: '_csrf'
@@ -75,7 +75,7 @@ module.exports = Form = (function() {
     for (i = 0, len = ref.length; i < len; i++) {
       field = ref[i];
       value = values[field.name];
-      if (field.required && (value == null)) {
+      if (field.required && ((value == null) || !value.match(/\w/))) {
         errors.push({
           message: "Campo obrigatório",
           field: field.name
@@ -83,7 +83,7 @@ module.exports = Form = (function() {
         continue;
       }
       valid[field.name] = value;
-      this.getField(field.name).value = value;
+      field.setValue(value);
     }
     this.processed = true;
     this.isValid = errors.length === 0;
@@ -100,21 +100,36 @@ module.exports = Form = (function() {
     }
   };
 
-  Form.prototype.render = function() {
-    var $, field, form, i, len, ref;
+  Form.prototype.render = function(element) {
+    var $, field, fieldEl, formEl, i, j, len, len1, ref, ref1;
     $ = require('k1/jquery');
-    form = $('<form/>');
-    form.attr({
+    formEl = element || $('<form/>');
+    formEl.attr({
       action: "/.form/" + this.name,
       method: "post",
       name: this.name
     });
-    ref = this.fields;
-    for (i = 0, len = ref.length; i < len; i++) {
-      field = ref[i];
-      field.render().append_to(form);
+    if (formEl.find('input, textarea').size() === 0) {
+      ref = this.fields;
+      for (i = 0, len = ref.length; i < len; i++) {
+        field = ref[i];
+        field.render().append_to(formEl);
+      }
+    } else {
+      ref1 = this.fields;
+      for (j = 0, len1 = ref1.length; j < len1; j++) {
+        field = ref1[j];
+        fieldEl = formEl.find("*[name='" + field.name + "']");
+        if (!fieldEl.size()) {
+          continue;
+        }
+        field.fillElement(fieldEl);
+      }
+      if (formEl.find('input[name="_csrf"]').size() === 0) {
+        this.getField("_csrf").render().append_to(formEl);
+      }
     }
-    return form;
+    return formEl;
   };
 
   return Form;

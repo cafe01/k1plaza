@@ -9,6 +9,7 @@ module.exports = SubmitField = (function(superClass) {
 
   function SubmitField(params) {
     params.name = params.name || 'submit';
+    params["class"] = params["class"] || 'btn btn-primary';
     SubmitField.__super__.constructor.apply(this, arguments);
     this.type = 'submit';
     this.required = false;
