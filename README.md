@@ -8,8 +8,8 @@ Se você ainda não possui o Docker instalado, aqui estão os tutoriais pra cada
 - [Linux Ubuntu](https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-using-the-repository)
 - [Mac](https://docs.docker.com/docker-for-mac/install/#install-and-run-docker-for-mac)
 - [Mac Antigo](https://docs.docker.com/toolbox/toolbox_install_mac/)
-- [Windows](https://docs.docker.com/docker-for-windows/install/)
-- [Windows Antigo](https://docs.docker.com/toolbox/toolbox_install_windows/)
+- [Windows 10 Pro ou Enterprise](https://docs.docker.com/docker-for-windows/install/)
+- [Windows 10 Home ou anterior](https://docs.docker.com/toolbox/toolbox_install_windows/)
 
 # Instalando o K1Plaza
 
@@ -34,7 +34,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - "./websites:/projects"
+      - "./projetos:/projects"
       - "uploads:/k1plaza/file_storage"
   db:
     image: mysql:5.7
@@ -63,7 +63,7 @@ Usando o prompt de comando, acesse a pasta aonde se encontra o arquivo `docker-c
 Ex:
 ```
 [~]$ cd ~/workspace/k1plaza
-[~/workspace/k1plaza]$ ls docker-compose.yml 
+[~/workspace/k1plaza]$ ls docker-compose.yml
 docker-compose.yml
 [~/workspace/k1plaza]$ docker-compose up
 Starting k1plaza_mysql ... done
@@ -88,11 +88,11 @@ k1plaza | Server available at http://127.0.0.1:3000
 k1plaza | [info] K1Plaza started in development mode.
 ```
 
-Mantenha o prompt de comando aberto enquanto trabalha. 
+Mantenha o prompt de comando aberto enquanto trabalha.
 Para desligar os containers basta apertar `CTRL+C`. Qualquer conteúdo de testes que você adicionar estará salvo para o próximo `docker-compose up`
 
 ## 3. Abrir Developer Panel
 
-Acessar http://localhost:3000/.dev
-
-
+Acessar o Developer Panel:
+- Docker: http://localhost:3000/.dev
+- Docker Toolbox: http://192.168.99.100:3000/.dev
