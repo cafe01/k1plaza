@@ -1,6 +1,6 @@
 
-var FormClass = require("k1/form"),
-    form = new FormClass({});
+var Form = require("k1/form").Form,
+    form = new Form({});
 
 var fields = form.fields;
 test.ok(Array.isArray(fields), "fields array")

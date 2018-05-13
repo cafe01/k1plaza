@@ -1,5 +1,5 @@
 
-var Field = require("k1/form/field/text"),
+var Field = require("k1/form/field/text").TextField,
     field = new Field({
         name: 'foo',
         class: 'form-control',

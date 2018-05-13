@@ -1,6 +1,6 @@
 
-var Form = require("k1/form"),
-    form = new Form({
+var FormClass = require("k1/form").Form,
+    form = new FormClass({
         name: 'testForm',
         fields: ["name", "email:email", { name: "message", type: "textarea", required: false }],
         action: function(values) {

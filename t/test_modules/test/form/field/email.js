@@ -1,5 +1,5 @@
 
-var Field = require("k1/form/field/email"),
+var Field = require("k1/form/field/email").EmailField,
     field = new Field({
         name: 'email'
     });

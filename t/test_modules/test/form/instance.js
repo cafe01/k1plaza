@@ -1,5 +1,5 @@
 
-var Form = require("k1/form"),
+var Form = require("k1/form").Form,
     form = new Form({
         name: 'testForm',
         fields: ["name", "email:email", { name: "message", type: "textarea", required: false }],

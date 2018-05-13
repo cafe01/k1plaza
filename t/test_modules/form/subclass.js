@@ -1,19 +1,9 @@
-var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  hasProp = {}.hasOwnProperty;
 
-module.exports = (function(superClass) {
-  extend(_Class, superClass);
 
-  function _Class() {
-    return _Class.__super__.constructor.apply(this, arguments);
-  }
+var Form = require("k1/form").Form
 
-  _Class.prototype.fields = ["name", "email:email"];
-
-  _Class.prototype.action = function() {
-    return "subclass action ok";
-  };
-
-  return _Class;
-
-})(require('k1/form'));
+exports.default = exports.Subclass = function() {
+    this.fields = ["name", "email:email"]
+    this.action = function() { return "subclass action ok" }
+    Form.apply(this, arguments)
+}

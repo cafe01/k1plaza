@@ -1,5 +1,5 @@
 
-var Subclass = require("form/subclass"),
+var Subclass = require("form/subclass").Subclass,
     form = new Subclass(),
     form2 = new Subclass();
 

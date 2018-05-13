@@ -1,5 +1,5 @@
 
-var Field = require("k1/form/field/textarea"),
+var Field = require("k1/form/field/textarea").TextAreaField,
     field = new Field({
         name: 'message',
         required: false,
