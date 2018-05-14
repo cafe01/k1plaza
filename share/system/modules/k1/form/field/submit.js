@@ -13,13 +13,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var field_1 = require("k1/form/field");
 var SubmitField = /** @class */ (function (_super) {
     __extends(SubmitField, _super);
-    function SubmitField(params) {
+    function SubmitField(config) {
         var _this = this;
-        params.name = params.name || 'submit';
-        params.class = params.class || 'btn btn-primary';
-        _this = _super.call(this, params) || this;
-        _this.type = 'submit';
-        _this.required = false;
+        config.name = config.name || 'submit';
+        config.required = config.required || false;
+        config.class = config.class || 'btn btn-primary';
+        config.type = 'submit';
+        _this = _super.call(this, config) || this;
         return _this;
     }
     return SubmitField;

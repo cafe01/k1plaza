@@ -18,6 +18,7 @@ test.is(rendered.find('textarea').size(), 1, 'textarea')
 // process
 form.process({ name: 'Carlos Fernando' })
 rendered = form.render()
-
+test.is(rendered.attr("method"), "post", "method")
+test.is(rendered.attr("action"), "/.form/testForm", "action")
 test.is(rendered.find('input[name="name"]').attr('value'), 'Carlos Fernando', 'rendered input value')
 // test.diag(rendered.as_html())

@@ -111,7 +111,7 @@ var Form = /** @class */ (function () {
         var $ = require('k1/jquery');
         var formEl = element || $('<form/>');
         formEl.attr({
-            action: "/.form/#{@name}",
+            action: "/.form/" + this.name,
             method: "post",
             name: this.name
         });

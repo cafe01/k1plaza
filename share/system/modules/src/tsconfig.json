@@ -5,7 +5,7 @@
         "module": "commonjs",
         "sourceMap": false,
         "allowJs": false,
-        "baseUrl": "."
+        "baseUrl": ".",
+        "outDir": "../k1"
     }
-
 }

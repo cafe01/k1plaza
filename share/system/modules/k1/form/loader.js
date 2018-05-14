@@ -1,8 +1,4 @@
 "use strict";
-var __makeTemplateObject = (this && this.__makeTemplateObject) || function (cooked, raw) {
-    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
-    return cooked;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 var form_1 = require("k1/form");
 var FormLoader = /** @class */ (function () {
@@ -24,7 +20,7 @@ var FormLoader = /** @class */ (function () {
             return new FormClass(formConfig);
         }
         catch (e) {
-            console.error(templateObject_1 || (templateObject_1 = __makeTemplateObject(["error loading form '", "'"], ["error loading form '", "'"])), formName);
+            console.error("error loading form '" + formName + "':", e.message);
             throw "invalid form: '" + formName + "'";
         }
     };
@@ -33,4 +29,3 @@ var FormLoader = /** @class */ (function () {
 exports.FormLoader = FormLoader;
 var singleton = new FormLoader();
 exports.default = singleton;
-var templateObject_1;

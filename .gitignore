@@ -15,3 +15,4 @@
 /docker-compose.override.yml
 /share/system/static/stylesheets/
 /share/backend/static/development/
+/.vscode/

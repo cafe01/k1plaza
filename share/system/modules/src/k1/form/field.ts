@@ -27,10 +27,10 @@ export class FormField {
 
         // error: missing name
         if (this.name == undefined) {
-            console.error("[FormField] missing 'name' config")
+            console.error("[FormField] missing field 'name'", params)
             throw("missing form field 'name'")
         }
-
+ 
         // parse type from name
         let match;
         if (match = this.name.match(/(\w+):(\w+)/)) {

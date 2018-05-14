@@ -10,6 +10,7 @@ import { SubmitField } from "./form/field/submit"
 
 let fieldTypes = [TextField, TextAreaField, EmailField, SubmitField, HiddenField]
 let typeMap = {}
+
 for (let Type of fieldTypes) {
     let typeSample = new Type({ name: "sample" })
     typeMap[typeSample.type] = Type
@@ -139,7 +140,7 @@ class Form {
         let formEl = element || $('<form/>')
     
         formEl.attr({
-            action:  "/.form/#{@name}",
+            action:  `/.form/${this.name}`,
             method: "post",
             name: this.name
         })
@@ -170,6 +171,5 @@ class Form {
 
 
 }
-
 
 export { Form, FormField, TextField, TextAreaField, EmailField, SubmitField }

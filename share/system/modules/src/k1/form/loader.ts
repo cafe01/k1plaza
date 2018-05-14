@@ -23,7 +23,7 @@ class FormLoader {
             return new FormClass(formConfig)
         }
         catch (e) {
-            console.error `error loading form '${formName}'`
+            console.error(`error loading form '${formName}':`, e.message)
             throw `invalid form: '${formName}'`
         }
     }
