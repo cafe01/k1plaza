@@ -107,7 +107,7 @@ sub _process_js {
     $log->info("Processando form '$form_name'. Parametros recebidos:");
     for my $key (keys %$params) {
         next if $key eq '_csrf';
-        $log->info(sprintf "%s: %s", $key, $params->{$key} || '""');
+        $log->info(sprintf "🡺 %s: %s", $key, $params->{$key} || '""');
     }
 
     # TODO validate csrf
@@ -118,7 +118,7 @@ sub _process_js {
     my $result = $js->eval(qq(
 
         var params = require('params'),
-            form = require('k1/form/loader').load("$form_name"),
+            form = require('k1/form/loader').default.load("$form_name"),
             result;
 
         result = form.process(params)

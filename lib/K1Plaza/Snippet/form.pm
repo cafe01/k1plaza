@@ -40,7 +40,7 @@ sub _process_js {
     local $js->modules->{element} = $element;
 
     $js->eval(qq(
-        var formLoader = require('k1/form/loader'),
+        var formLoader = require('k1/form/loader').default,
             element = require('element'),
             flash = require('k1/flash'),
             token = require('k1/csrf_token'),
@@ -49,18 +49,21 @@ sub _process_js {
 
         if (!form) {
             console.error("<x-form> aborting.")
-            return
+            0;
+        }
+        else {
+
+            // process params
+            params["_csrf"] = token
+            form.process(params)
+
+            // render
+            element.get(0).setNodeName('form')
+            form.render(element)
+            1;
         }
 
-        // process params
-        params["_csrf"] = token
-        form.process(params)
-
-        // render
-        element.get(0).setNodeName('form')
-        form.render(element)
-        1;
-    ));
+    ), 'x-form-eval');
 }
 
 
