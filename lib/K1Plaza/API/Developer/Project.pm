@@ -2,9 +2,11 @@ package K1Plaza::API::Developer::Project;
 
 use Mojo::Base -base;
 use Mojo::File 'path';
+use Mojo::Util 'slugify';
 use Git::Raw;
 use Data::Printer;
 use K1Plaza::Sitemap;
+use Q1::Git::Repository;
 
 has 'tx';
 
@@ -40,7 +42,8 @@ sub list {
         my $dir = $_;
         my $project = {
             name     => $dir->basename,
-            base_dir => $dir,
+            dir => $dir,
+            base_dir => $dir->basename,
         };
 
         # git info
@@ -72,7 +75,7 @@ sub list {
     my @projects_in_page = splice(@projects, $params->{start}, $params->{limit});
     foreach my $project (@projects_in_page) {
 
-        my $dir = $project->{base_dir};
+        my $dir = $project->{dir};
 
         # git info
         if ($project->{git}) {
@@ -117,8 +120,11 @@ sub list {
         }
 
         # registered
-        my $registered = $app_instances->resultset->single({ name => $project->{name} });
-        $project->{record} = { $registered->get_columns } if $registered;
+        my $registered = $app_instances->resultset->single({ base_dir => "$dir" });
+        if ($registered) {
+            $project->{name} = $registered->name;
+            $project->{record} = { $registered->get_columns };
+        }
 
     }
 
@@ -138,26 +144,88 @@ sub list {
 }
 
 
+sub create {
+    my ($self, $params) = @_;
+    my $tx = $self->tx;
+
+    # error: missing name
+    my $project_name = $params->{name};
+    return { error => 'MISSING_NAME' } unless $project_name && $project_name =~ /\w/;
+
+    # error: missing repository
+    my $repository_name = $params->{repository_name};
+    return { error => 'MISSING_REPOSITORY' } unless $repository_name && $repository_name =~ /\w/;
+
+    # directory
+    my $directory_name = $params->{directory} || $params->{name};
+    $directory_name = slugify $directory_name;
+
+    # error: folder exists
+    my $directory = path($tx->config->{developer_workspace})->child($directory_name);
+    return { error => 'DIRECTORY_EXISTS' } if -d $directory;
+
+    # fetch repo info
+    my $token = $params->{github_access_token};
+    my $url = "https://api.github.com/repos/$repository_name";
+    my $res = $self->tx->ua->get($url, $token ? { 'Authorization' => "token $token" } : ())->result;
+
+    unless ($res->is_success) {
+        $tx->log->error("GET $url: ${\ $res->code } ${\ $res->message }", $res->body);
+        return { error => 'GITHUB_ERROR', body => $res->body };
+    }
+
+    my $repo_info = $res->json;
+    # p $repo_info;
+
+    # clone repo   
+    my $repo = Q1::Git::Repository->clone($repo_info->{clone_url}, $directory, {
+        github_access_token => $params->{github_access_token},
+        transfer_progress => $params->{transfer_progress},
+        sideband_progress => $params->{sideband_progress},
+    });
+
+    # error: cloning error
+
+    # remove origin
+    my ($origin) = grep { $_->name eq 'origin' } $repo->remotes;
+    if ($origin) {
+        $origin->delete($repo->raw, 'origin');            
+
+        # HACK remove lingering remote config header
+        my $git_config = $directory->child(".git/config");
+        $git_config->spurt($git_config->slurp =~ s/\[remote "origin"\]//r);
+    }
+
+    # success
+    return {
+        success => 1,
+        project_directory => $directory,
+        project_base_dir => $directory->basename,
+        project_repository => $repo
+    }
+}
+
+
 sub load_or_register {
-    my ($self, $project_name) = @_;
+    my ($self, $params) = @_;
 
     # developer workspace
     my $workspace = path($self->tx->config->{developer_workspace})->to_abs;
 
     # find project
-    my $dir = $workspace->child($project_name);
+    my $dir = $workspace->child($params->{base_dir});
     die "Project folder '$dir' doesn't exist." unless -d $dir;
 
     # already registered
     my $api = $self->tx->api('AppInstance');
-    my $app_instance = $api->resultset->single({ name => $project_name });
+    my $app_instance = $api->resultset->single({ base_dir => "$dir" });
     if ($app_instance) {
-        $app_instance->update({ base_dir => "$dir" });
         return { $app_instance->get_columns };
     }
 
     # register
-    my $res = $api->register_app({ name => $project_name, base_dir => "$dir" });
+    $params->{name} ||= $dir->basename;
+    my $res = $api->register_app({ name => $params->{name}, base_dir => "$dir" });
     die "Error on register_app()" unless $res->{success};
     $res->{items}[0];
 }

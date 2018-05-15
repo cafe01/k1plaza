@@ -11,6 +11,7 @@ use DBI;
 use K1Plaza::Schema;
 use Data::Printer;
 use K1Plaza;
+use DBI;
 
 our @EXPORT = (
     @Test2::V0::EXPORT,
@@ -38,9 +39,20 @@ sub app {
     state $app;
 
     unless ($app) {
+
+        # create database
+        my $dbh = DBI->connect("dbi:mysql:dbname=;host=db;port=3306", "root", 'P@ssw0rd', { mysql_enable_utf8 => 1, quote_names => 1, RaiseError => 1 } )
+            or die "Could not connect to test database.";
+    
+        # $dbh->do("DROP DATABASE k1plaza_test IF EXISTS;");
+        $dbh->do("CREATE DATABASE IF NOT EXISTS k1plaza_test;");
+        $dbh->do("USE k1plaza_test;");            
+
+        # app
         $app = K1Plaza->new(
             home => Mojo::Home->new("t/test_home/")->to_abs,
-            mode => 'test'
+            mode => 'test',
+            schema => K1Plaza::Schema->connect({ dbh_maker => sub { $dbh }})
         );
 
         my $js = $app->js;

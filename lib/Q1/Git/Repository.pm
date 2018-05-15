@@ -36,7 +36,7 @@ has 'raw',
 
         $repo;
     },
-    handles => [qw/ is_bare is_empty head lookup /];
+    handles => [qw/ is_bare is_empty head lookup remotes /];
 
 
 sub BUILD {
@@ -46,17 +46,33 @@ sub BUILD {
 
 
 sub _build_credentials_callback {
-    my ($private_key, $public_key) = @_;
+    my ($opts) = @_;
+
+
+    # Github access token - https://blog.github.com/2012-09-21-easier-builds-and-deployments-using-git-over-https-and-oauth/
     return sub {
         my ($url, $user, $types) = @_;
-        die "Host $url does not support ssh_key credential."
+
+        Git::Raw::Cred->userpass($opts->{github_access_token}, 'x-oauth-basic');
+
+    } if $opts->{github_access_token};
+
+    # ssh keys
+    return sub {
+        my ($url, $user, $types) = @_;
+        warn "# on github credential callback ($url, $user)\n";
+        p $types;
+        
+        die "Host $url does not support ssh_key credential. (@$types)"
             unless grep { 'ssh_key' } @$types;
 
-        if ($private_key) {
-            $public_key ||= "$private_key.pub";
-            Git::Raw::Cred->sshkey($user, $public_key, $private_key);
-        }
-    }
+        $opts->{ssh_public_key} ||= "$opts->{ssh_private_key}.pub";
+        Git::Raw::Cred->sshkey($user, $opts->{ssh_public_key}, $opts->{ssh_private_key});
+        
+    } if $opts->{ssh_private_key};
+
+    # no creds
+    die "¯\_(ツ)_/¯";
 }
 
 
@@ -67,14 +83,23 @@ sub clone {
     $fetch_opts ||= {};
     $checkout_opts ||= {};
 
-    my $private_key = delete $opts->{ssh_private_key};
-    my $public_key = delete $opts->{ssh_public_key};
-    $fetch_opts->{callbacks}{credentials} = _build_credentials_callback($private_key, $public_key);
+    my $private_key = $opts->{ssh_private_key};
+    my $public_key = $opts->{ssh_public_key};
+
+
+    for (qw/transfer_progress sideband_progress/) {
+        $fetch_opts->{callbacks}{$_} = $opts->{$_}
+            if $opts->{$_};
+    }
+
+    $fetch_opts->{callbacks}{credentials} = _build_credentials_callback($opts)
+        if ($opts->{github_access_token} || $opts->{ssh_private_key});
 
     if (ref $url && $url->isa(__PACKAGE__)) {
         $url = 'file://'.$url->git_dir;
     }
 
+    # p $fetch_opts;
     my $raw = Git::Raw::Repository->clone($url, $target_dir, $opts, $fetch_opts, $checkout_opts);
 
     $class->new({
@@ -82,6 +107,7 @@ sub clone {
         git_dir => $target_dir,
         ssh_private_key => $private_key,
         ssh_public_key => $public_key,
+        github_access_token => $opts->{github_access_token}
     });
 }
 

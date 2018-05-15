@@ -1,10 +1,11 @@
 var Projects;
 
 developer.controller('Projects', Projects = (function() {
-  Projects.$inject = ['$http'];
+  Projects.$inject = ['$http', '$uibModal'];
 
-  function Projects(http) {
+  function Projects(http, modal) {
     this.http = http;
+    this.modal = modal;
     this.projects = {};
     this.page = 1;
     this.limit = 10;
@@ -64,7 +65,7 @@ developer.controller('Projects', Projects = (function() {
     }
     console.log(pagePath);
     return this.http.post('/.dev/.resource/project/select', {
-      name: project.name
+      base_dir: project.base_dir
     }).then((function(_this) {
       return function(res) {
         return window.location = pagePath;
@@ -123,6 +124,32 @@ developer.controller('Projects', Projects = (function() {
     git.status = status;
     git.status.isClear = info.length === 0;
     return git.status.line = info.length ? info.join(', ') : "All clear :)";
+  };
+
+  Projects.prototype.newProject = function() {
+    var Ctlr;
+    return this.modal.open({
+      templateUrl: 'newProjectModal.html',
+      backdrop: 'static',
+      controllerAs: 'vm',
+      controller: [
+        '$uibModalInstance', Ctlr = (function() {
+          function Ctlr(modal) {
+            this.modal = modal;
+            console.log('modal controller');
+          }
+
+          return Ctlr;
+
+        })()
+      ]
+    }).result.then((function(_this) {
+      return function(params) {
+        return _this.http.post('/.dev/.resource/project/', params).then(function(res) {
+          return _this.load();
+        });
+      };
+    })(this), function() {});
   };
 
   return Projects;

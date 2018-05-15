@@ -1,5 +1,2 @@
-var developer;
-
 moment.locale('pt-br');
-
-developer = angular.module('developer', ['ui.bootstrap']);
+var developer = angular.module('developer', ['ui.bootstrap']);

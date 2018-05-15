@@ -2,11 +2,21 @@
 
     <div class="row" ng-controller="Projects as vm" ng-show="vm.ready" ng-cloak>
 
-        <div class="col-6"></div>
+        <div class="col-6">
+            <div class="btn-group" uib-dropdown >
+                <a href="/starters" ng-disabled="vm.loading" class="btn btn-dark">Novo Projeto</a>
+                <button class="btn btn-dark" uib-dropdown-toggle ng-disabled="vm.loading"></button>
+
+                <div class="dropdown-menu" uib-dropdown-menu role="menu">
+                    <a ng-click="vm.importProject()" class="dropdown-item" disabled>Importar do GitHub</a>
+                    <a href="/new" class="dropdown-item">Escolher Starter Kit</a>
+                </div>
+            </div>
+        </div>
         <div class="col-6 mb-2">
             <div class="input-group">
-               <input type="text" class="form-control" ng-model="vm.query" ng-change="vm.search()" ng-model-options='{ debounce: 300 }'
-               placeholder="Procurar">
+               <input type="text" class="form-control" ng-model="vm.query" ng-change="vm.search()" ng-model-options='{ debounce: 250 }'
+                      placeholder="Procurar">
                <div class="input-group-append">
                    <button class="btn" ng-show="vm.query" ng-click="vm.query = ''; vm.search()">X</button>
                </div>
@@ -25,6 +35,7 @@
                 <tbody>
                     <tr>
                         <td ng-show="!vm.projects.items">Carregando... </td>
+                        <td ng-show="vm.projects.items.length == 0">Nenhum projeto encontrado.</td>
                     </tr>
                     <tr ng-repeat="p in vm.projects.items">
                         <td>
@@ -56,8 +67,10 @@
                             <!-- project menu -->
                             <div class="btn-group" uib-dropdown >
 
-                                <button ng-click="vm.select(p)" ng-disabled="vm.loading" class="btn btn-secondary" style="min-width:9em">{{ p.name }}</button>
-                                <button class="btn btn-secondary" uib-dropdown-toggle ng-disabled="vm.loading"></button>
+                                <button ng-click="vm.select(p)" ng-disabled="vm.loading" uib-tooltip="Abrir {{p.name}}" tooltip-popup-delay='1000' class="btn btn-light text-left text-truncate" style="width:12em">
+                                    <i class="fa fa-folder"></i> {{ p.name }}
+                                </button>
+                                <button class="btn btn-light" uib-dropdown-toggle ng-disabled="vm.loading"></button>
 
                                 <div class="dropdown-menu" uib-dropdown-menu role="menu">
                                     <a ng-click="vm.select(p)" class="dropdown-item">/</a>
@@ -90,9 +103,6 @@
                                     <a class="text-info" uib-tooltip="{{ p.git.last_commit.message}}" ng-href="{{ p.git.last_commit.url }}" >{{ p.git.last_commit.id.substr(0, 8) }}</a>
                                 </small>
                             </p>
-
-
-
                         </td>
                     </tr>
                 </tbody>
@@ -112,10 +122,35 @@
                 </div>
             </div> -->
 
-            <ul class="pagination" uib-pagination total-items="vm.projects.total" ng-model="vm.page" ng-change="vm.load()" ng-disabled="vm.loading" previous-text="🡨" next-text="🡺">
+            <ul class="pagination justify-content-center" uib-pagination total-items="vm.projects.total" ng-model="vm.page" ng-change="vm.load()" ng-disabled="vm.loading" previous-text="🡨" next-text="🡺">
             </ul>
 
         </div>
     </div>
+
+    <script type="text/ng-template" id="newProjectModal.html">
+      <div class="modal-header">
+          <h2 class="modal-title">Novo Projeto 👏</h2>
+      </div>
+      <form name="vm.form" ng-submit="vm.modal.close(vm.params)">
+          <div class="modal-body">
+                <div class="form-group">
+                    <!-- <label>Nome do projeto <i class="text-danger">*</i></label> -->
+                    <input type="text" class="form-control" ng-model="vm.params.name" placeholder="Nome do projeto" required autofocus>
+                    <small class="form-text text-muted">Ex.: NomeDoCliente (Uma pasta com esse nome será criada no seu workspace.)</small>
+                </div>
+                <div class="form-group">
+                    <!-- <label>Descrição</label> -->
+                    <input type="text" class="form-control" ng-model="vm.params.description" placeholder="Descrição">
+                    <small class="form-text text-muted">Breve descrição do website.</small>
+                </div>
+          </div>
+          <div class="modal-footer">
+              <button class="btn btn-primary" type="submit" ng-disabled="!vm.form.$valid">Criar Projeto</button>
+              <button class="btn btn-light" type="button" ng-click="vm.modal.dismiss()">Cancelar</button>
+          </div>
+      </form>
+  </script>
+
 
 </x-wrap>

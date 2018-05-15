@@ -306,9 +306,11 @@ sub _setup_developer {
     unshift @{$app->renderer->paths}, $app->home->child('share/developer/template')->to_string;
 
     $r->get('/' => { template => 'index', handler => 'plift' });
+    $r->get('/starters' => { template => 'starters', handler => 'plift' })->name('developer-starters');
     $r->get('/config' => { template => 'config', handler => 'plift' })->name('developer-settings');
-    $r->resource('project')
-      ->post('select')->to('#select_project');
+    my $project = $r->resource('project');
+    $project->post('select')->to('#select_project');
+    $project->websocket('ws/create')->to('#ws_create');
 
     $r->resource('settings')
       ->post('/token')->to('#update_token');

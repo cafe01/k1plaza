@@ -7,6 +7,7 @@ use Carp;
 use Scalar::Util qw/ blessed /;
 use Class::Load ();
 use Mojo::File 'path';
+use Mojo::Util 'slugify';
 use Q1::AppInstance;
 use Data::Dumper;
 use Data::Printer;
@@ -67,7 +68,7 @@ sub register_app ($self, $name, $alias = undef, $env = undef) {
 		if $self->clone->count({ name => $data->{name} }) > 0;
 
     $env //= $self->app->mode;
-	$data->{aliases} //= [lc $data->{name}];
+	$data->{aliases} //= [slugify $data->{name}];
     $data->{aliases} = [$data->{aliases}] unless ref $data->{aliases} eq 'ARRAY';
 	$data->{aliases} = [ map { ref eq 'HASH' ? $_ : +{ name => $_, environment => $env } } @{$data->{aliases}} ];
 
