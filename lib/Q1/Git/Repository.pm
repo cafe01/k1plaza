@@ -200,11 +200,15 @@ sub fetch ($self, $remote_name = 'origin') {
 
     my ($remote) = grep { $_->name eq $remote_name } $raw->remotes;
     die "No remote '$remote_name' found." unless $remote;
-    $remote->fetch({
-        callbacks => {
-            credentials => _build_credentials_callback($self->ssh_private_key, $self->ssh_public_key)
-        }
-    });
+    
+    # fetch
+    my $fetch_opts = {};
+    $fetch_opts->{callbacks}->{credentials} = _build_credentials_callback({
+        ssh_private_key => $self->ssh_private_key, 
+        ssh_public_key  => $self->ssh_public_key
+    }) if $self->ssh_private_key;
+
+    $remote->fetch($fetch_opts);
 
     # remote track
     foreach my $branch ($raw->branches('local')) {
