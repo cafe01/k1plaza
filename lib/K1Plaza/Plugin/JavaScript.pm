@@ -64,7 +64,7 @@ sub _build_context {
             $pool{$context_id} = $js;
 
             # garbade collect
-            my $task_id; $task_id = Mojo::IOLoop->recurring(60 => sub {
+            my $task_id; $task_id = Mojo::IOLoop->recurring(300 => sub {
                 my $loop = shift;
                 unless ($pool{$context_id}) {
                     $log->debug("JavaScript context '$context_id' is gone, exiting GC task.");
