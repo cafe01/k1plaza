@@ -39,6 +39,7 @@ services:
   db:
     image: mysql:5.7
     container_name: k1plaza_mysql
+    entrypoint: ["docker-entrypoint.sh", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
     networks:
       - k1plaza
     ports:
@@ -96,3 +97,14 @@ Para desligar os containers basta apertar `CTRL+C`. Qualquer conteúdo de testes
 Acessar o Developer Panel:
 - Docker: http://localhost:3000/.dev
 - Docker Toolbox: http://192.168.99.100:3000/.dev
+
+# Como atualizar o K1Plaza
+
+## 1. Baixar nova versão da imagem
+```
+docker pull cafe01/k1plaza
+```
+
+## 2. (Re)iniciar seus containers
+Finalize os container se estiverem executando e rode novamente o comando `docker-compose up`.
+O container `k1plaza` será recriado utilizando a imagem que você acabou de baixar.
