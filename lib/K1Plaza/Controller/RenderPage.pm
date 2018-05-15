@@ -53,7 +53,7 @@ sub default {
     $c->widget;
 
     # render
-    $c->log->info(sprintf "🡺 '%s' (template: %s)", $page_config->{title} || $page_config->{fullpath}, $page_config->{template});
+    $c->log->info(sprintf "⤷ /%s '%s' (%s)", $page_config->{fullpath}, $page_config->{title} || $page_config->{fullpath}, $page_config->{template});
     $c->render(handler => 'plift');
 }
 

@@ -74,7 +74,7 @@ sub _scrap_user_medias {
     }
 
     # parse data
-    warn $script->text;
+    # warn $script->text;
     my ($javascript_data) = $script->text =~ /.*?(\{.*\})/s;
     my $data = decode_json $javascript_data;
 

@@ -31,7 +31,7 @@ sub get_data {
 
     my $url = sprintf "http://vimeo.com/api/v2/%s/%s/videos.json?page=%d", $resource_name, $params->{$resource_name}, $params->{page} || 1;
 
-    my $data = $tx->cache->get("htto-get-$url");
+    my $data = $tx->cache->get("http-get-$url");
 
     unless ($data) {
 
@@ -43,7 +43,7 @@ sub get_data {
         }
         else {
             # TODO developer warning
-            $tx->log->error('<x-vimeo>: http error: '.$res->status_line);
+            $tx->log->error(sprintf '<x-vimeo>: HTTP GET /%s/%s 🡺 %s %s: %s', $resource_name, $params->{$resource_name}, $res->code, $res->message, $res->body);
             $data = [];
         }
     }
@@ -72,6 +72,10 @@ sub process {
         thumbnail_medium => { selector => '.vimeo-thumbnail, .vimeo-thumbnail-medium', at => '@src' },
         thumbnail_small => { selector => '.vimeo-thumbnail-small', at => '@src' },
         thumbnail_large => { selector => '.vimeo-thumbnail-large', at => '@src' },
+        user_portrait_medium => { selector => '.vimeo-user-thumbnail-medium', at => '@src' },
+        user_portrait_small => { selector => '.vimeo-user-thumbnail-small', at => '@src' },
+        user_portrait_large => { selector => '.vimeo-user-thumbnail, .vimeo-user-thumbnail-large', at => '@src' },
+        user_portrait_huge => { selector => '.vimeo-user-thumbnail-huge', at => '@src' },
         stats_number_of_likes => '.vimeo-likes',
         stats_number_of_plays => '.vimeo-plays',
         stats_number_of_comments => '.vimeo-comments',
@@ -79,7 +83,7 @@ sub process {
             "css_thumbnail_$_" => { selector => ".vimeo-thumbnail-${_}-css", data_key => "thumbnail_${_}", callback => sub {
                 my ($el, $url) = @_;
                 my $style = $el->attr('style') || '';
-                $el->attr( style => "$style; background-image: url('$url');"); 
+                $el->attr( style => "$style; background-image: url('$url');");
             }}
         )} qw/ small medium large /
 
