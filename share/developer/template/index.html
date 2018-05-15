@@ -41,7 +41,7 @@
                         <td>
 
                             <!-- git status badges -->
-                            <div class="float-right" ng-init="s = p.git.status">
+                            <!-- <div class="float-right" ng-init="s = p.git.status">
                                 <span ng-if="s.new" title="Arquivos adicionados" class="badge badge-light mr-2 position-relative">
                                     <span class="text-primary"><i class="fa fa-plus"></i></span>
                                 <span class="badge badge-light align-top position-absolute" style="bottom:-7px; right:-5px;">{{ s.new.length }}</span>
@@ -62,13 +62,13 @@
                                     <span class="text-danger"><i class="fa fa-bomb"></i></span>
                                 <span class="badge badge-light align-top position-absolute" style="bottom:-7px; right:-5px;">{{ s.conflicted.length }}</span>
                                 </span>
-                            </div>
+                            </div> -->
 
                             <!-- project menu -->
                             <div class="btn-group" uib-dropdown >
 
                                 <button ng-click="vm.select(p)" ng-disabled="vm.loading" uib-tooltip="Abrir {{p.name}}" tooltip-popup-delay='1000' class="btn btn-light text-left text-truncate" style="width:12em">
-                                    <i class="fa fa-folder"></i> {{ p.name }}
+                                    <i class="fa fa-fw fa-folder"></i> {{ p.name }}
                                 </button>
                                 <button class="btn btn-light" uib-dropdown-toggle ng-disabled="vm.loading"></button>
 
@@ -127,30 +127,5 @@
 
         </div>
     </div>
-
-    <script type="text/ng-template" id="newProjectModal.html">
-      <div class="modal-header">
-          <h2 class="modal-title">Novo Projeto 👏</h2>
-      </div>
-      <form name="vm.form" ng-submit="vm.modal.close(vm.params)">
-          <div class="modal-body">
-                <div class="form-group">
-                    <!-- <label>Nome do projeto <i class="text-danger">*</i></label> -->
-                    <input type="text" class="form-control" ng-model="vm.params.name" placeholder="Nome do projeto" required autofocus>
-                    <small class="form-text text-muted">Ex.: NomeDoCliente (Uma pasta com esse nome será criada no seu workspace.)</small>
-                </div>
-                <div class="form-group">
-                    <!-- <label>Descrição</label> -->
-                    <input type="text" class="form-control" ng-model="vm.params.description" placeholder="Descrição">
-                    <small class="form-text text-muted">Breve descrição do website.</small>
-                </div>
-          </div>
-          <div class="modal-footer">
-              <button class="btn btn-primary" type="submit" ng-disabled="!vm.form.$valid">Criar Projeto</button>
-              <button class="btn btn-light" type="button" ng-click="vm.modal.dismiss()">Cancelar</button>
-          </div>
-      </form>
-  </script>
-
 
 </x-wrap>
