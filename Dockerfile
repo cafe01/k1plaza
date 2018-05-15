@@ -38,17 +38,20 @@ RUN wget -O- http://git.io/cpm | perl - install --global --cpanfile=/root/cpanfi
 
 RUN useradd -ms /bin/bash k1plaza && echo 'k1plaza ALL=(ALL:ALL) NOPASSWD: ALL' > /etc/sudoers.d/k1plaza
 WORKDIR /k1plaza
-RUN mkdir file_storage repositories managed_apps && \
-    chown k1plaza:k1plaza file_storage repositories managed_apps
+RUN mkdir /projects file_storage repositories managed_apps && \
+    chown k1plaza:k1plaza /projects file_storage repositories managed_apps
 
 
 
-ADD ./share share
 ADD ./script script
+ADD ./share/backend share/backend
+ADD ./share/system share/system
+ADD ./share/backoffice share/backoffice
+ADD ./share/developer share/developer
 ADD ./lib lib
 
 USER k1plaza:k1plaza
 EXPOSE 3000
-STOPSIGNAL TERM
+STOPSIGNAL SIGTERM
 ENV MOJO_MODE=development K1PLAZA_DEVELOPER=1
 ENTRYPOINT ["./script/k1plaza", "daemon"]
