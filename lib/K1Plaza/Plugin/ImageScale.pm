@@ -66,7 +66,7 @@ sub _process_response {
 
     # our params
     return unless $params && ($params->{width} || $params->{height});
-    $log->debug(sprintf "Scaling image to %dx%d", $params->{width}, $params->{height});
+    $log->debug(sprintf "Scaling image to %sx%s", $params->{width}||'', $params->{height})||'';
     $params->{format} = 'jpeg' if $params->{format} eq 'jpg';
     # p $params;
 
