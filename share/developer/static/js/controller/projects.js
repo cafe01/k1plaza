@@ -49,6 +49,9 @@ developer.controller('Projects', (_a = /** @class */ (function () {
                 _this.projects = projects;
             });
         };
+        Projects.prototype.chooseStarter = function () {
+            location.replace("/.dev/starters");
+        };
         Projects.prototype.select = function (project, pagePath) {
             if (pagePath === void 0) { pagePath = "/"; }
             if (!pagePath.match(/^\//))

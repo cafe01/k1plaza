@@ -4,12 +4,12 @@
 
         <div class="col-6">
             <div class="btn-group" uib-dropdown >
-                <a href="/starters" ng-disabled="vm.loading" class="btn btn-dark">Novo Projeto</a>
+                <button ng-click="vm.chooseStarter()" ng-disabled="vm.loading" class="btn btn-dark">Novo Projeto</button>
                 <button class="btn btn-dark" uib-dropdown-toggle ng-disabled="vm.loading"></button>
 
                 <div class="dropdown-menu" uib-dropdown-menu role="menu">
                     <a ng-click="vm.importProject()" class="dropdown-item" disabled>Importar do GitHub</a>
-                    <a href="/new" class="dropdown-item">Escolher Starter Kit</a>
+                    <a href="/starters" class="dropdown-item">Escolher Starter Kit</a>
                 </div>
             </div>
         </div>

@@ -1,4 +1,5 @@
 declare var developer:any
+declare var moment:any
 
 developer.controller('Projects', class Projects {
 
@@ -61,6 +62,10 @@ developer.controller('Projects', class Projects {
 
             this.projects = projects
         });
+    }
+
+    chooseStarter() {
+        location.replace("/.dev/starters")
     }
 
     select (project, pagePath = "/") {
