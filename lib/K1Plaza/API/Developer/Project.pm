@@ -178,13 +178,19 @@ sub create {
     # p $repo_info;
 
     # clone repo   
-    my $repo = Q1::Git::Repository->clone($repo_info->{clone_url}, $directory, {
+    # NOTE using temp dir as a workaround for the limitation of libgit2 on default virtualbox shared folder
+    my $tmp_dir = path("/tmp")->child($directory->basename);
+    my $repo = Q1::Git::Repository->clone($repo_info->{clone_url}, $tmp_dir, {
         github_access_token => $params->{github_access_token},
         transfer_progress => $params->{transfer_progress},
         sideband_progress => $params->{sideband_progress},
     });
 
     # error: cloning error
+    my $copy_error = system("cp -r $tmp_dir $directory");
+    die "error copying new repository from '$tmp_dir' to '$directory'" if $copy_error;
+    $tmp_dir->remove_tree;
+    $repo = Q1::Git::Repository->new(git_dir => "$directory");
 
     # remove origin
     my ($origin) = grep { $_->name eq 'origin' } $repo->remotes;
