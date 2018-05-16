@@ -9,6 +9,7 @@ isa_ok $js, 'JavaScript::V8::CommonJS';
 # p app->js->paths;
 
 js_test("native/jquery");
+js_test("native/email");
 
 js_test("form/field");
 js_test("form/field/text");
