@@ -202,12 +202,14 @@ sub _prepare_create_from_file {
 	# TODO: approve mime type/subtype
 
     if ($mime_type =~ /image/) {
+        my ($image_type) = $mime_type =~ /image\/(.*)/;
+
         $object->{is_image} = 1;
         @$object{qw/ width height /} = imgsize("$object->{file}");
 
         my $img = Imager->new;
         my $file_path = "$object->{file}";
-        $img->read( file => $file_path )
+        $img->read( file => $file_path, type => $image_type, png_ignore_benign_errors => 1)
             or die sprintf "Cannot load image file %s: %s", $file_path, $img->errstr;
 
         # fix orientation
@@ -218,7 +220,6 @@ sub _prepare_create_from_file {
 
             my $scaled = $img->scale( xpixels => $self->max_image_width, ypixels => $self->max_image_height, type => 'min' );
 
-            my ($image_type) = $mime_type =~ /image\/(.*)/;
             (undef, my $tempfile) = tempfile('q1-autoscale-XXXXXXXX', OPEN => 0, DIR => '/tmp');
             
             $scaled->write( file => $tempfile, type => $image_type )

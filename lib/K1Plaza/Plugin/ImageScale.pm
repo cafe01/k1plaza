@@ -76,7 +76,8 @@ sub _process_response {
     my $image = Imager->new;
     my $input_format = $c->app->types->detect($res->headers->content_type)->[0];
     my $original_mtime = $res->content->asset->mtime;
-    $image->read(data => $res->content->asset->slurp, type => $input_format) or die $image->errstr;
+    $image->read(data => $res->content->asset->slurp, type => $input_format, png_ignore_benign_errors => 1) 
+        or die $image->errstr;
 
     my $orientation_index = $image->tags(name => 'exif_orientation');
 
