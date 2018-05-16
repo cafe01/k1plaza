@@ -8,6 +8,8 @@ use Q1::Web::Template::Plift::jQuery;
 use Cwd qw/ getcwd /;
 use K1Plaza::JS::Request;
 use K1Plaza::JS::Flash;
+use K1Plaza::JS::Console;
+use K1Plaza::JS::Jobs;
 
 my @system_module_paths = ( getcwd() . "/share/system/modules" );
 
@@ -91,12 +93,16 @@ sub _build_context {
         }
     }
 
+    # bind console
+    $js->{context}->c->bind( console => K1Plaza::JS::Console->new($c) );
+
     # reset module refs per request
     my $modules = $js->{context}->modules;
     $modules->{'k1/jquery'} = sub { j(@_) };
 
     $modules->{'k1/csrf_token'} = $c->csrf_token;
 
+    $modules->{'k1/jobs'} = K1Plaza::JS::Jobs->new($c);
     $modules->{'k1/request'} = K1Plaza::JS::Request->new($c->req);
 
 
