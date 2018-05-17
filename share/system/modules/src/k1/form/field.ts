@@ -5,6 +5,7 @@ let htmlAttributes = [ "name", "type", "id", "class", "placeholder", "value", "t
 
 export class FormField {
 
+    label = null
     name = null
     type = "text"
     value = null
@@ -15,6 +16,8 @@ export class FormField {
         tag: "div",
         class: "form-group"
     }
+
+    errors = []
     
     constructor(params = {}) {
 
@@ -42,33 +45,84 @@ export class FormField {
     }
 
     setValue(value: any) {
+        
+        // required
+        if (this.required && (typeof value != "string" || !value.match(/\S/))) {
+            this.errors.push({
+                type: 'required',
+                field: this.name,
+                message: "Campo obrigatório."
+            })
+
+            return false
+        }
+    
+        // TODO type validation
+        
         this.value = value
+        return true
+    }
+
+    isValid() {
+        return this.errors.length == 0
     }
 
     render() : any {
+
+        // wrapper
         let $ = require("k1/jquery")
+        let wrapperConfig = this.wrapper || { tag: 'div', class: null }
+        let wrapper = $(`<${wrapperConfig.tag}/>`)
+
+        if (wrapperConfig.class) {
+            wrapper.add_class(wrapperConfig.class)
+        }
 
         // element
+        let element = this.renderElement()
+        wrapper.append(element)
+
+        // return only children if configured with null wrapper
+        return this.wrapper ? wrapper : wrapper.children()
+    }
+
+    renderElement() {
+
+        // element
+        let $ = require("k1/jquery")
         let element = $(`<${this.tag} />`)
+
         for (let attr of htmlAttributes) {
             if (this[attr]) element.attr(attr, this[attr])
         }
             
         if (this.required) element.attr("required", "required")
 
-        // wrapper
-        if (!this.wrapper) return element
-        let wrapper = $(`<${this.wrapper.tag}/>`)
-        if (this.wrapper.class)
-            wrapper.add_class(this.wrapper.class)
+        // fill value
+        this.fillElement(element)
 
-        wrapper.append(element)
-        return wrapper
+        return element
     }
 
     fillElement(element) {
-        if (this.hasOwnProperty("value")) element.attr("value", this.value)        
+        if (this.value != undefined) element.attr("value", this.value)   
+        this.renderError(element)
     }
+
+    renderError(element) {
+        
+        if (this.errors.length == 0) return;
+
+        let error = this.errors[0]
+        element.add_class(`error error-${error.type}`)
+        
+        let $ = require("k1/jquery")
+        let span = $("<span/>")
+            .text(error.message)        
+            .attr('class', `error_message`)
+            .insert_after(element)
+    }
+
 }
  
   

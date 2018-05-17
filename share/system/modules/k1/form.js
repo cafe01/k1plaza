@@ -82,22 +82,16 @@ var Form = /** @class */ (function () {
         for (var _i = 0, _a = this.fields; _i < _a.length; _i++) {
             var field = _a[_i];
             var value = values[field.name];
-            // required
-            if (field.required && (typeof value == "undefined" || !value.match(/\w/))) {
-                errors.push({
-                    message: "Campo obrigatório",
-                    field: field.name
-                });
-                continue;
+            if (field.setValue(value)) {
+                valid[field.name] = value;
             }
-            // TODO type validation
-            // add valid value
-            valid[field.name] = value;
-            field.setValue(value);
-            // return result
-            this.isProcessed = true;
-            this.isValid = errors.length == 0;
+            else {
+                errors.push.apply(errors, field.errors);
+            }
         }
+        // return result
+        this.isProcessed = true;
+        this.isValid = errors.length == 0;
         // console.log "valid fields", valid
         return this.isValid ? {
             success: true,
@@ -115,11 +109,13 @@ var Form = /** @class */ (function () {
             method: "post",
             name: this.name
         });
-        // render complete form
+        // element is empty, render complete form
         if (formEl.find('input, textarea').size() == 0) {
             for (var _i = 0, _a = this.fields; _i < _a.length; _i++) {
                 var field = _a[_i];
-                field.render().append_to(formEl);
+                var rendered = field.render();
+                // console.log("rendered field", rendered.as_html())
+                rendered.append_to(formEl);
             }
         }
         else {

@@ -19,6 +19,7 @@ var HiddenField = /** @class */ (function (_super) {
         _this.wrapper = null;
         return _this;
     }
+    HiddenField.prototype.renderError = function () { };
     return HiddenField;
 }(field_1.FormField));
 exports.HiddenField = HiddenField;

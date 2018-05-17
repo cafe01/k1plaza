@@ -44,7 +44,7 @@ sub _process_js {
             element = require('element'),
             flash = require('k1/flash'),
             token = require('k1/csrf_token'),
-            params = flash.get("form-${\ $self->name }") || {},
+            params = flash.get("form-${\ $self->name }"),
             form = formLoader.load("${\ $self->name }");
 
         if (!form) {
@@ -54,8 +54,13 @@ sub _process_js {
         else {
 
             // process params
-            params["_csrf"] = token
-            form.process(params)
+            if (params) {
+                params["_csrf"] = token
+                form.process(params)
+            }
+            else {
+                form.getField("_csrf").setValue(token)
+            }
 
             // render
             element.get(0).setNodeName('form')

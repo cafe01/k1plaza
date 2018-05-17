@@ -19,11 +19,15 @@ var TextAreaField = /** @class */ (function (_super) {
         _this.tag = 'textarea';
         return _this;
     }
-    TextAreaField.prototype.render = function () {
-        var el = _super.prototype.render.call(this);
-        el.text(this.value);
-        el.remove_attr('value');
-        return el;
+    TextAreaField.prototype.renderElement = function () {
+        return _super.prototype.renderElement.call(this)
+            .remove_attr('value')
+            .remove_attr('type');
+    };
+    TextAreaField.prototype.fillElement = function (el) {
+        if (this.value != undefined)
+            el.text(this.value);
+        this.renderError(el);
     };
     return TextAreaField;
 }(field_1.FormField));
