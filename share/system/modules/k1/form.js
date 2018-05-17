@@ -9,11 +9,22 @@ exports.TextAreaField = textarea_1.TextAreaField;
 var email_1 = require("./form/field/email");
 exports.EmailField = email_1.EmailField;
 var hidden_1 = require("./form/field/hidden");
+exports.HiddenField = hidden_1.HiddenField;
 var submit_1 = require("./form/field/submit");
 exports.SubmitField = submit_1.SubmitField;
 var file_1 = require("./form/field/file");
 exports.FileField = file_1.FileField;
-var fieldTypes = [text_1.TextField, textarea_1.TextAreaField, email_1.EmailField, submit_1.SubmitField, hidden_1.HiddenField, file_1.FileField];
+var recaptcha_1 = require("./form/field/recaptcha");
+exports.RecaptchaField = recaptcha_1.RecaptchaField;
+var fieldTypes = [
+    text_1.TextField,
+    textarea_1.TextAreaField,
+    email_1.EmailField,
+    submit_1.SubmitField,
+    hidden_1.HiddenField,
+    file_1.FileField,
+    recaptcha_1.RecaptchaField
+];
 var typeMap = {};
 for (var _i = 0, fieldTypes_1 = fieldTypes; _i < fieldTypes_1.length; _i++) {
     var Type = fieldTypes_1[_i];

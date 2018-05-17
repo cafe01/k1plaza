@@ -7,9 +7,18 @@ import { EmailField } from "./form/field/email"
 import { HiddenField } from "./form/field/hidden"
 import { SubmitField } from "./form/field/submit"
 import { FileField } from "./form/field/file"
+import { RecaptchaField } from "./form/field/recaptcha"
 
 
-let fieldTypes = [TextField, TextAreaField, EmailField, SubmitField, HiddenField, FileField]
+let fieldTypes = [
+    TextField, 
+    TextAreaField, 
+    EmailField, 
+    SubmitField, 
+    HiddenField, 
+    FileField, 
+    RecaptchaField
+]
 
 let typeMap = {}
 
@@ -170,4 +179,14 @@ class Form {
 
 }
 
-export { Form, FormField, TextField, TextAreaField, EmailField, SubmitField, FileField }
+export { 
+    Form, 
+    FormField, 
+    TextField, 
+    TextAreaField, 
+    EmailField, 
+    SubmitField, 
+    HiddenField, 
+    FileField, 
+    RecaptchaField
+}
