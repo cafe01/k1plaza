@@ -11,7 +11,9 @@ exports.EmailField = email_1.EmailField;
 var hidden_1 = require("./form/field/hidden");
 var submit_1 = require("./form/field/submit");
 exports.SubmitField = submit_1.SubmitField;
-var fieldTypes = [text_1.TextField, textarea_1.TextAreaField, email_1.EmailField, submit_1.SubmitField, hidden_1.HiddenField];
+var file_1 = require("./form/field/file");
+exports.FileField = file_1.FileField;
+var fieldTypes = [text_1.TextField, textarea_1.TextAreaField, email_1.EmailField, submit_1.SubmitField, hidden_1.HiddenField, file_1.FileField];
 var typeMap = {};
 for (var _i = 0, fieldTypes_1 = fieldTypes; _i < fieldTypes_1.length; _i++) {
     var Type = fieldTypes_1[_i];
@@ -111,25 +113,26 @@ var Form = /** @class */ (function () {
         });
         // element is empty, render complete form
         if (formEl.find('input, textarea').size() == 0) {
-            for (var _i = 0, _a = this.fields; _i < _a.length; _i++) {
-                var field = _a[_i];
-                var rendered = field.render();
-                // console.log("rendered field", rendered.as_html())
-                rendered.append_to(formEl);
-            }
+            this.fields
+                .forEach(function (f) { return f.render().append_to(formEl); });
         }
         else {
             // render field values
-            for (var _b = 0, _c = this.fields; _b < _c.length; _b++) {
-                var field = _c[_b];
+            for (var _i = 0, _a = this.fields; _i < _a.length; _i++) {
+                var field = _a[_i];
                 var fieldEl = formEl.find("*[name='" + field.name + "']");
                 if (fieldEl.size() == 0)
                     continue;
                 field.fillElement(fieldEl);
+                field.renderError(fieldEl);
             }
             if (formEl.find('input[name="_csrf"]').size() == 0) {
                 this.getField("_csrf").render().append_to(formEl);
             }
+        }
+        // enctype multipart/form-data
+        if (this.fields.filter(function (f) { return f.type == "file"; }).length > 0) {
+            formEl.attr("enctype", "multipart/form-data");
         }
         return formEl;
     };

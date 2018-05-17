@@ -21,7 +21,7 @@ test.like(form.getField("email"), { name: 'email', type: 'email', required: true
 test.like(form.getField("message"), { name: 'message', type: 'textarea', required: false }, 'field message')
 
 
-
+// process
 var values = { name: 'User', email: 'user@example.com', message: "hello!", _csrf: 'foo' }
 var result = form.process(values)
 

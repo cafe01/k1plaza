@@ -37,6 +37,13 @@ var FormField = /** @class */ (function () {
         // console.log("new form field", this)
     }
     FormField.prototype.setValue = function (value) {
+        if (this.validate(value)) {
+            this.value = value;
+            return true;
+        }
+        return false;
+    };
+    FormField.prototype.validate = function (value) {
         // required
         if (this.required && (typeof value != "string" || !value.match(/\S/))) {
             this.errors.push({
@@ -46,8 +53,6 @@ var FormField = /** @class */ (function () {
             });
             return false;
         }
-        // TODO type validation
-        this.value = value;
         return true;
     };
     FormField.prototype.isValid = function () {
@@ -64,28 +69,29 @@ var FormField = /** @class */ (function () {
         // element
         var element = this.renderElement();
         wrapper.append(element);
+        // fill value
+        this.fillElement(element);
+        // render error 
+        this.renderError(element);
         // return only children if configured with null wrapper
         return this.wrapper ? wrapper : wrapper.children();
     };
     FormField.prototype.renderElement = function () {
-        // element
+        var _this = this;
         var $ = require("k1/jquery");
         var element = $("<" + this.tag + " />");
-        for (var _i = 0, htmlAttributes_1 = htmlAttributes; _i < htmlAttributes_1.length; _i++) {
-            var attr = htmlAttributes_1[_i];
-            if (this[attr])
-                element.attr(attr, this[attr]);
-        }
-        if (this.required)
+        htmlAttributes
+            .filter(function (a) { return _this[a] != undefined; })
+            .forEach(function (a) { return element.attr(a, _this[a]); });
+        if (this.required) {
             element.attr("required", "required");
-        // fill value
-        this.fillElement(element);
+        }
         return element;
     };
     FormField.prototype.fillElement = function (element) {
-        if (this.value != undefined)
+        if (this.value != undefined) {
             element.attr("value", this.value);
-        this.renderError(element);
+        }
     };
     FormField.prototype.renderError = function (element) {
         if (this.errors.length == 0)

@@ -102,7 +102,23 @@ sub process {
 sub _process_js {
     my ($c, $form_name) = @_;
     my $log = $c->log;
+    
+    # prepare params and uploads
     my $params = $c->req->json || $c->req->params->to_hash;
+    for my $upload (@{$c->req->uploads}) {
+        
+        next unless $upload->size && $upload->filename;
+        
+        my $asset = $upload->asset;
+        $asset = $asset->to_file unless $asset->is_file;
+
+        $params->{$upload->name} = {
+            type => $upload->headers->content_type,
+            size => $upload->size,
+            filename => $upload->filename,
+            path => $asset->path
+        }
+    }
 
     $log->info("Processando form '$form_name'. Parametros recebidos:");
     for my $key (keys %$params) {

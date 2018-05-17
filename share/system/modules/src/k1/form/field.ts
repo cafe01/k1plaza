@@ -46,6 +46,16 @@ export class FormField {
 
     setValue(value: any) {
         
+        if (this.validate(value)) {            
+            this.value = value
+            return true
+        }        
+        
+        return false
+    }
+
+    validate(value) {
+
         // required
         if (this.required && (typeof value != "string" || !value.match(/\S/))) {
             this.errors.push({
@@ -56,10 +66,7 @@ export class FormField {
 
             return false
         }
-    
-        // TODO type validation
-        
-        this.value = value
+
         return true
     }
 
@@ -82,31 +89,36 @@ export class FormField {
         let element = this.renderElement()
         wrapper.append(element)
 
+        // fill value
+        this.fillElement(element)
+
+        // render error 
+        this.renderError(element)
+
         // return only children if configured with null wrapper
         return this.wrapper ? wrapper : wrapper.children()
     }
 
     renderElement() {
 
-        // element
         let $ = require("k1/jquery")
         let element = $(`<${this.tag} />`)
 
-        for (let attr of htmlAttributes) {
-            if (this[attr]) element.attr(attr, this[attr])
-        }
+        htmlAttributes
+            .filter(a => this[a] != undefined)
+            .forEach(a => element.attr(a, this[a]))
             
-        if (this.required) element.attr("required", "required")
-
-        // fill value
-        this.fillElement(element)
+        if (this.required) {
+            element.attr("required", "required")
+        }
 
         return element
     }
 
     fillElement(element) {
-        if (this.value != undefined) element.attr("value", this.value)   
-        this.renderError(element)
+        if (this.value != undefined) {
+            element.attr("value", this.value)  
+        }
     }
 
     renderError(element) {

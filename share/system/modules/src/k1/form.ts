@@ -6,9 +6,11 @@ import { TextAreaField } from "./form/field/textarea"
 import { EmailField } from "./form/field/email"
 import { HiddenField } from "./form/field/hidden"
 import { SubmitField } from "./form/field/submit"
+import { FileField } from "./form/field/file"
 
 
-let fieldTypes = [TextField, TextAreaField, EmailField, SubmitField, HiddenField]
+let fieldTypes = [TextField, TextAreaField, EmailField, SubmitField, HiddenField, FileField]
+
 let typeMap = {}
 
 for (let Type of fieldTypes) {
@@ -139,11 +141,8 @@ class Form {
         // element is empty, render complete form
         if (formEl.find('input, textarea').size() == 0) {
 
-            for (let field of this.fields) {
-                let rendered = field.render()
-                // console.log("rendered field", rendered.as_html())
-                rendered.append_to(formEl)
-            }
+            this.fields
+                .forEach( f => f.render().append_to(formEl) )
         }
         else {
             // render field values
@@ -151,11 +150,17 @@ class Form {
                 let fieldEl = formEl.find(`*[name='${field.name}']`)
                 if (fieldEl.size() == 0) continue
                 field.fillElement(fieldEl)
+                field.renderError(fieldEl)
             }
     
             if (formEl.find('input[name="_csrf"]').size() == 0) {
                 this.getField("_csrf").render().append_to(formEl)
             }
+        }
+
+        // enctype multipart/form-data
+        if (this.fields.filter((f) => f.type == "file").length > 0) {
+            formEl.attr("enctype", "multipart/form-data")
         }
 
         return formEl
@@ -165,4 +170,4 @@ class Form {
 
 }
 
-export { Form, FormField, TextField, TextAreaField, EmailField, SubmitField }
+export { Form, FormField, TextField, TextAreaField, EmailField, SubmitField, FileField }

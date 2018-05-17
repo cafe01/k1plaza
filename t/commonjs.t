@@ -15,6 +15,7 @@ js_test("form/field");
 js_test("form/field/text");
 js_test("form/field/email");
 js_test("form/field/textarea");
+js_test("form/field/file");
 js_test("form/class");
 js_test("form/instance");
 js_test("form/subclass");

@@ -12,7 +12,7 @@ test.is(field.type, 'textarea', 'type')
 field.setValue("Loren")
 
 var rendered = field.render().find("textarea")
-test.diag(rendered.as_html())
+// test.diag(rendered.as_html())
 
 test.is(rendered.attr('name'), 'message', 'attr: name')
 test.is(rendered.attr('class'), 'form-control', 'attr: class')

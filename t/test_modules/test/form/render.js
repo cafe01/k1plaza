@@ -14,12 +14,13 @@ var rendered = form.render();
 
 test.is(rendered.find('textarea').size(), 1, 'textarea')
 
+test.is(rendered.find("span").size(), 0, 'no error elements yet')
+
 
 // process
 var result = form.process({ name: 'Carlos Fernando', message: "Hello!" })
-// test.diag("form result", JSON.stringify(result))
+test.diag("form result", JSON.stringify(result))
 
-test.is(rendered.find("span").size(), 0, 'no error elements')
 
 rendered = form.render()
 test.is(rendered.attr("method"), "post", "method")
@@ -34,4 +35,4 @@ test.is(email.attr('value'), undefined, 'email is empty')
 
 // errors
 test.is(email.attr('class'), 'form-control error error-required', 'email error')
-test.ok(rendered.find("span").size(), 'error elements')
+test.is(rendered.find("span").size(), 1, 'error element found')
