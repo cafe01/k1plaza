@@ -3,10 +3,12 @@ package K1Plaza::JS::Jobs;
 use strict;
 use warnings;
 use Hash::Util::FieldHash 'fieldhash';
-use Mojo::JSON qw/ to_json /;
+# use Mojo::JSON qw/ to_json /;
+use JSON::XS;
 
 fieldhash my %c;
 
+my $JSON = JSON::XS->new->pretty;
 
 
 sub new {
@@ -18,7 +20,7 @@ sub new {
 
 
 my $format = sub {
-    return map { ref $_ ? to_json($_) : $_ } @_
+    return map { ref $_ ? $JSON->encode($_) : $_ } @_
 };
 
 

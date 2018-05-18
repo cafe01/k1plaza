@@ -3,9 +3,12 @@ package K1Plaza::JS::Console;
 use strict;
 use warnings;
 use Hash::Util::FieldHash 'fieldhash';
-use Mojo::JSON qw/ to_json /;
+use Mojo::Util qw/ decode /;
+use JSON::XS;
 
 fieldhash my %c;
+
+my $JSON = JSON::XS->new->pretty;
 
 
 
@@ -17,7 +20,12 @@ sub new {
 }
 
 my $format = sub {
-    return map { ref $_ ? to_json($_) : $_ } @_
+    return map { 
+               ref $_ ? $JSON->encode($_) 
+                      : (decode('UTF-8', $_) || $_)
+           }            
+           map { defined $_ ? $_ : 'undef' } 
+           @_;
 };
 
 
