@@ -33,7 +33,7 @@ sub process {
     }
 
     # native
-    die "Form '$form_name' não existe.";
+    die "Form '${\ $self->name }' não existe.";
 }
 
 sub _process_js {

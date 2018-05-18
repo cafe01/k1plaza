@@ -52,7 +52,7 @@ sub startup {
 
     # parse cmd line
     my %opt;
-    $opt{dev} = $ENV{K1PLAZA_DEVELOPER} if defined $ENV{K1PLAZA_DEVELOPER};
+    $opt{dev} = $ENV{K1PLAZA_DEVELOPER} if $ENV{K1PLAZA_DEVELOPER};
     getopt \@ARGV,
         'dev' => \$opt{dev};
 

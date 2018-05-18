@@ -243,12 +243,12 @@ sub _prepare_create_from_file {
 
     if ($mime_type =~ /audio/) {
         $object->{is_audio} = 1;
-        die "Audio information extraction not implemented!";
+        $app->log->warn("Audio information extraction not implemented!");
     }
 
     if ($mime_type =~ /video/) {
         $object->{is_video} = 1;
-        die "Video information extraction not implemented!";
+        $app->log->warn("Video information extraction not implemented!");
     }
 }
 

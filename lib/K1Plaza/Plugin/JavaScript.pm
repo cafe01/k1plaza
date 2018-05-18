@@ -66,7 +66,7 @@ sub _build_context {
         };
 
         # cache for reuse
-        my $use_js_pool = 1;#$app->mode ne 'development';
+        my $use_js_pool = $app->mode ne 'development';
         if ($use_js_pool) {
 
             $pool{$context_id} = $js;
