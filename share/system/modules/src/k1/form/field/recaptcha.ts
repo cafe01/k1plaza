@@ -9,7 +9,6 @@ export class RecaptchaField extends FormField {
     secret: null
 
     constructor(config) {
-        
         config.type = config.name = "recaptcha"
 
         super(config)
@@ -34,11 +33,14 @@ export class RecaptchaField extends FormField {
         return $('<div class="g-recaptcha" data-key=""/>')
     }
 
-    fillElement(element) {
+    fillElement(element) {        
         if (typeof this.key == "string") {
             element.attr("data-sitekey", this.key)
         }        
     }
 
+    findElement(rootElement) {
+        return rootElement.find("div.g-recaptcha")
+    }
 
 }

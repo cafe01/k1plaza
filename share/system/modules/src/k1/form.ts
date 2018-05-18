@@ -156,7 +156,7 @@ class Form {
         else {
             // render field values
             for (let field of this.fields) {
-                let fieldEl = formEl.find(`*[name='${field.name}']`)
+                let fieldEl = field.findElement(formEl)
                 if (fieldEl.size() == 0) continue
                 field.fillElement(fieldEl)
                 field.renderError(fieldEl)

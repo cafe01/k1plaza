@@ -23,6 +23,10 @@ var FormField = /** @class */ (function () {
                 this[opt] = params[opt];
             }
         }
+        // convert required
+        if (typeof this.required == "string") {
+            this.required = this.required != "0";
+        }
         // error: missing name
         if (this.name == undefined) {
             console.error("[FormField] missing field 'name'", params);
@@ -34,7 +38,7 @@ var FormField = /** @class */ (function () {
             this.name = match[1];
             this.type = match[2];
         }
-        // console.log("new form field", this)
+        // console.log("new form field", this.name, this.required)
     }
     FormField.prototype.setValue = function (value) {
         if (this.validate(value)) {
@@ -101,8 +105,11 @@ var FormField = /** @class */ (function () {
         var $ = require("k1/jquery");
         var span = $("<span/>")
             .text(error.message)
-            .attr('class', "error_message")
+            .attr('class', "error_message text-danger")
             .insert_after(element);
+    };
+    FormField.prototype.findElement = function (rootElement) {
+        return rootElement.find(this.tag + "[name=\"" + this.name + "\"]");
     };
     return FormField;
 }());

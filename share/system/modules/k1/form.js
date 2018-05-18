@@ -131,7 +131,7 @@ var Form = /** @class */ (function () {
             // render field values
             for (var _i = 0, _a = this.fields; _i < _a.length; _i++) {
                 var field = _a[_i];
-                var fieldEl = formEl.find("*[name='" + field.name + "']");
+                var fieldEl = field.findElement(formEl);
                 if (fieldEl.size() == 0)
                     continue;
                 field.fillElement(fieldEl);

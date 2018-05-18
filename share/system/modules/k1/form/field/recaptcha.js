@@ -38,6 +38,9 @@ var RecaptchaField = /** @class */ (function (_super) {
             element.attr("data-sitekey", this.key);
         }
     };
+    RecaptchaField.prototype.findElement = function (rootElement) {
+        return rootElement.find("div.g-recaptcha");
+    };
     return RecaptchaField;
 }(field_1.FormField));
 exports.RecaptchaField = RecaptchaField;

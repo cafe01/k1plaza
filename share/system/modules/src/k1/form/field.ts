@@ -28,6 +28,11 @@ export class FormField {
             }
         }
 
+        // convert required
+        if (typeof this.required == "string") {
+            this.required = this.required != "0"
+        }
+
         // error: missing name
         if (this.name == undefined) {
             console.error("[FormField] missing field 'name'", params)
@@ -41,7 +46,7 @@ export class FormField {
             this.type = match[2]
         }
 
-        // console.log("new form field", this)
+        // console.log("new form field", this.name, this.required)
     }
 
     setValue(value: any) {
@@ -131,8 +136,12 @@ export class FormField {
         let $ = require("k1/jquery")
         let span = $("<span/>")
             .text(error.message)        
-            .attr('class', `error_message`)
+            .attr('class', `error_message text-danger`)
             .insert_after(element)
+    }
+
+    findElement(rootElement) {
+        return rootElement.find(`${this.tag}[name="${this.name}"]`)
     }
 
 }
