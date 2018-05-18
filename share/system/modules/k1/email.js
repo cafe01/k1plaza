@@ -8,6 +8,7 @@ var Email = /** @class */ (function () {
         this.body = null;
         this.template = null;
         this.htmlTemplate = null;
+        this.attachments = null;
         // from
         this.from = params.from;
         if (!this.from) {
@@ -36,6 +37,12 @@ var Email = /** @class */ (function () {
             this.template = params.template;
             this.htmlTemplate = params.htmlTemplate;
         }
+        // attachment
+        if (params.attachments) {
+            this.attachments = Array.isArray(params.attachments)
+                ? params.attachments
+                : [params.attachments];
+        }
         // console.log("new Email", this)
     }
     Email.prototype.send = function () {
@@ -43,7 +50,7 @@ var Email = /** @class */ (function () {
         // prepare params
         var params = {};
         Object.keys(this)
-            .filter(function (key) { return typeof _this[key] == "string"; })
+            .filter(function (key) { return _this[key] != undefined; })
             .forEach(function (key) { return params[key] = _this[key]; });
         if (params["htmlTemplate"])
             params["html_template"] = params["htmlTemplate"];

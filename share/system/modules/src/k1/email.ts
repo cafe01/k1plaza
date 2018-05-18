@@ -9,6 +9,7 @@ export class Email {
     body = null
     template = null
     htmlTemplate = null
+    attachments = null
 
     constructor(params) {
 
@@ -48,6 +49,13 @@ export class Email {
             this.htmlTemplate = params.htmlTemplate
         }        
 
+        // attachment
+        if (params.attachments) {
+            this.attachments = Array.isArray(params.attachments)
+                ? params.attachments
+                : [params.attachments]
+        }
+
         // console.log("new Email", this)
     }
 
@@ -56,7 +64,7 @@ export class Email {
         // prepare params
         let params = {}
         Object.keys(this)
-              .filter((key) => typeof this[key] == "string")
+              .filter((key) => this[key] != undefined)
               .forEach((key) => params[key] = this[key])
         
         if (params["htmlTemplate"])
