@@ -20,6 +20,16 @@ my $mime_types = MIME::Types->new;
 sub new_mail {
 	my ($self, $params) = @_;
 
+    # expand subject template
+    if ($params->{subject} && ref $params->{template_data} eq 'HASH') {
+
+        while (my ($k, $v) = each %{$params->{template_data}}) {
+            $k = quotemeta($k);
+            $params->{subject} =~ s/{\s*$k\s*}/$v/g;
+        }
+    }
+
+    # build messsage
     my %top_entity_args = map { defined $params->{$_} ? ($_ => $params->{$_}) : () }
 		qw/ from to cc bcc subject reply-to /;
 
@@ -60,18 +70,24 @@ sub new_mail {
     # attachments
     if ($params->{attachments}) {
     	$params->{attachments} = [$params->{attachments}] unless ref $params->{attachments} eq 'ARRAY';
-    	foreach my $file (@{$params->{attachments}}) {
-			my ($path, $filename, $opts) = ref $file ? @$file : ($file, path($file)->basename);
-		    $mail->attach(
+    	foreach my $attachment (@{$params->{attachments}}) {
+			
+            # my ($path, $filename, $opts) = ref $file ? @$file : ($file, path($file)->basename);
+            die "This attachment spec is not a hashref! its a ".ref($attachment)
+                unless ref $attachment eq 'HASH';
+		    
+            $mail->attach(
 		        # Path     => $path,
-				Data => path($path)->slurp,
-				Filename => $filename,
-		        Type     => $mime_types->mimeTypeOf($filename),
+				Data => path($attachment->{path})->slurp,
+				Filename => $attachment->{filename},
+		        Type     => $attachment->{type} || $mime_types->mimeTypeOf($attachment->{filename}),
 		        Encoding => "base64",
 		        Disposition => "attachment",
             );
 
-			unlink $path if $opts && $opts->{cleanup};
+            # delete file
+			unlink $attachment->{path} 
+                unless defined $attachment->{cleanup} && $attachment->{cleanup} == 0;
     	}
     }
 

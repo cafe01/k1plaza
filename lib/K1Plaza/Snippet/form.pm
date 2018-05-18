@@ -24,7 +24,16 @@ sub process {
         return $self->_process_js($element, $engine);
     }
 
+    # find config-based forms (legacy)
+    my $tx = $engine->context->{tx};
+    if (my $form = $tx->get_form_config($self->name)) {
+        
+        local $js->modules->{'form/'.$self->name} = $form;
+        return $self->_process_js($element, $engine);
+    }
+
     # native
+    die "disabled native forms";
     $self->_process_native($element, $engine);
 }
 
