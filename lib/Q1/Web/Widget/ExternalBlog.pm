@@ -5,10 +5,9 @@ use namespace::autoclean;
 use URI;
 use XML::Feed;
 use Data::Dumper;
-use LWP::UserAgent;
+# use LWP::UserAgent;
 
 extends 'Q1::Web::Widget';
-with 'Q1::Role::Widget::RenderSnippet';
 
 has '+is_ephemeral', default => 1;
 has '+cache_duration', default => '12h';
@@ -19,34 +18,35 @@ has_config 'max_entries', isa => 'Int', default => 10;
 
 has_param 'limit', default => 0;
 
+has 'tx', is => 'ro', required => 1;
 
-has 'ua' => (
-    is      => 'ro',
-    lazy    => 1,
-    default => sub {
-        LWP::UserAgent->new(
-            agent       => 'Q1Software Platform User-Agent',
-            timeout     => 10,
-            max_size    => 1024 * 1024 * 100,
-        )
-    }
-);
+# has 'ua' => (
+#     is      => 'ro',
+#     lazy    => 1,
+#     default => sub {
+#         LWP::UserAgent->new(
+#             agent       => 'Q1Software Platform User-Agent',
+#             timeout     => 10,
+#             max_size    => 1024 * 1024 * 100,
+#         )
+#     }
+# );
 
 
 sub get_data {
     my ($self) = @_;
 
     # fetch feed url
-    my $res = $self->ua->get($self->url);
+    my $res = $self->tx->ua->get($self->url)->result;
 
     unless ($res->is_success) {
         $self->cache_duration('2m');
-        $self->tx->log->error("[ExternalBlog] HTTP error: ". $res->status_line);
-        return { success => \0, items => [], error => $res->status_line };
+        $self->tx->log->error(sprintf "[ExternalBlog] GET '%s': %s %s", $self->url, $res->code, $res->message);
+        return { success => \0, items => [], error => $res->message };
     }
 
     # parse feed
-    my $feed = XML::Feed->parse(\($res->decoded_content));
+    my $feed = XML::Feed->parse(\($res->body));
 
     unless ($feed) {
         $self->tx->log->error("[ExternalBlog] XML::Feed error: ". XML::Feed->errstr);
