@@ -57,17 +57,33 @@ sub _build_context {
             last => time,
             total => 1,
             context => JavaScript::V8::CommonJS->new({ 
-                paths => [@system_module_paths],
+                paths => [@system_module_paths, $app_instance ? $app_instance->base_dir->to_string : ()],
                 v8_params => {
                     time_limit => 5,
-                    flags => '--use-strict --harmony-scoping --harmony-collections --max_old_space_size 100'
+                    flags => '--use-strict --harmony-scoping --harmony-collections --max_old_space_size 200'
                 }
             })
         };
 
         # cache for reuse
-        my $use_js_pool = $app->mode ne 'development';
+        my $use_js_pool = defined $app->config->{reuse_javascript_context}
+            ? $app->config->{reuse_javascript_context}
+            : $app->mode ne 'development';
+            
         if ($use_js_pool) {
+
+            # TODO delete contexts used many times
+
+            # delete last used if full
+            if (scalar keys %pool > 3) {
+
+                my ($last_used_id) = sort {
+                    $pool{$a}{last} <=> $pool{$b}{last}
+                } keys %pool;
+
+                $log->debug("[JS Pool] deleting context '$last_used_id'");
+                delete $pool{$last_used_id};
+            }
 
             $pool{$context_id} = $js;
 

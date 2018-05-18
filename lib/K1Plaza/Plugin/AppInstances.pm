@@ -149,9 +149,6 @@ sub _around_dispatch {
         local $c->app->renderer->{paths} =
             [map { "$_" } @{ $skin_manager->generate_template_include_path($c) }, @{$c->app->renderer->{paths}}];
 
-        # commonjs paths
-        local $c->js->{paths} = [@{$c->js->{paths}}, $app_instance->base_dir->to_string];
-
         # add app name to log lines
         my $app_name = $app_instance->name;
 
