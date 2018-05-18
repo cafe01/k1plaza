@@ -48,7 +48,6 @@ requires 'XML::Feed' => 0.49;
 requires 'Email::Sender' => 0.120001;
 
 requires 'HTTP::BrowserDetect' => 2.01;
-requires 'HTML::FormHandler' => 0.40011;
 
 # datetime
 requires 'DateTime::Format::Strptime' => 1.51;
@@ -83,7 +82,7 @@ requires 'Devel::TimeStats' => 0.03;
 requires 'Try::Tiny' => 0.016;
 requires 'Type::Tiny' => 0.014;
 requires 'Unicode::UTF8' => 0.59;
-requires 'JavaScript::V8::CommonJS' => 0.04;
+requires 'JavaScript::V8::CommonJS' => 0.05;
 requires 'YAML::Any' => 0.84;
 requires 'YAML::XS' => 0.41;
 requires 'CSS::Sass' => '3.4.5';

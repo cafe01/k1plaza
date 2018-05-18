@@ -58,9 +58,8 @@ sub _process_js {
 
     # validate csrf token
     unless ($params->{_csrf} && $params->{_csrf} eq $c->csrf_token) {
-        $log->error("Form '$form_name' posted with invalid csrf token.");
-        $c->res->code(403);
-        return $c->render(json => { success => \0 });
+        $c->res->code(403);        
+        return $c->render(json => { success => \0, 'Invalid csrf token.' });
     }
 
     # run on javascript
@@ -93,10 +92,9 @@ sub _process_js {
 
         $log->error("Form '$form_name' falhou:");
         for my $e (@{ $result->{errors} || []}) {
-            $log->error("$e->{field}:\t$e->{message}");
+            $log->error("$e->{field}: '$e->{message}'");
         }
     }
-
 
     $c->respond_to(
         json => { json => $result->{success}
@@ -104,6 +102,7 @@ sub _process_js {
             : { success => \0, errors => $result->{errors} }
         },
         any => sub {
+            $c->flash("form-$form_name-success", $result->{success});
             $c->redirect_to($c->req->headers->referrer || '/')
         }
     );
