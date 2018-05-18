@@ -78,7 +78,9 @@ sub _render_menu_item {
     my $rendered_item = $item_tpl->clone;
 
     # label
-    $rendered_item->find('.menu-item-label')->text($item->{menu_label} || $item->{title});
+    my $label_tpl = $rendered_item->find('.menu-item-label');
+    $label_tpl = $rendered_item->find('a') unless $label_tpl->size;    
+    $label_tpl->text($item->{menu_label} || $item->{title});
 
     # path class
     my $path_class = $item->{fullpath};
