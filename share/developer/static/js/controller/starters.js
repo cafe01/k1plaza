@@ -12,7 +12,8 @@ developer.controller('Starters', (_a = /** @class */ (function () {
             this.http = null;
             this.modal = null;
             this.repos = [
-                { full_name: 'cafe01/k1plaza-starter-blank' }
+                { full_name: 'cafe01/k1plaza-starter-blank' },
+                { full_name: 'cafe01/k1plaza-bootstrap4-components' }
             ];
             this.loading = false;
             this.ready = false;

@@ -7,7 +7,8 @@ developer.controller('Starters', class Starters {
     http = null
     modal = null
     repos = [
-        { full_name: 'cafe01/k1plaza-starter-blank' }
+        { full_name: 'cafe01/k1plaza-starter-blank' },
+        { full_name: 'cafe01/k1plaza-bootstrap4-components' }
     ]
 
     loading = false
