@@ -40,27 +40,33 @@ sub _build_context {
         ? $app_instance->id.($app_instance->deployment_version || '')
         : 'system';
 
+    
+    # reuse js context
     my $js;
     if ($js = $pool{$context_id}) {
 
-        # reuse js context
         $pool{$context_id}{total}++;
         $pool{$context_id}{last} = time;
-        $log->debug("Reusing javascript context '$context_id' ($pool{$context_id}{total})");
-        return $pool{$context_id}{context};
+        $log->debug("Reusing javascript context '$context_id' ($pool{$context_id}{total}) ".scalar(keys %pool));
+        $js = $pool{$context_id};
     }
     else {
+        # new js context
 
-        # new js
         $js = {
             last => time,
             total => 1,
-            context => JavaScript::V8::CommonJS->new({ paths => [@system_module_paths] })
+            context => JavaScript::V8::CommonJS->new({ 
+                paths => [@system_module_paths],
+                v8_params => {
+                    time_limit => 5,
+                    flags => '--use-strict --harmony-scoping --harmony-collections --max_old_space_size 100'
+                }
+            })
         };
 
-
         # cache for reuse
-        my $use_js_pool = $app->mode ne 'development';
+        my $use_js_pool = 1;#$app->mode ne 'development';
         if ($use_js_pool) {
 
             $pool{$context_id} = $js;
@@ -85,7 +91,6 @@ sub _build_context {
             });
         }
 
-
         # our require.js
         my $require_js = $c->app->home->child('share/system/require.js');
         if (-f $require_js) {
@@ -93,10 +98,11 @@ sub _build_context {
         }
     }
 
-    # bind console
+    # per-request context initialization
+
+    # console
     $js->{context}->c->bind( console => K1Plaza::JS::Console->new($c) );
 
-    # reset module refs per request
     my $modules = $js->{context}->modules;
     $modules->{'k1/jquery'} = sub { j(@_) };
 
