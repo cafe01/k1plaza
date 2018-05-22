@@ -93,6 +93,15 @@ sub _render {
     # process
     my $document = $plift->process($template);
 
+    # insert inner content
+    if (defined $stash->{'mojo.content'}->{content}) {
+ 
+        my $wrapper_selector = $stash->{'layout_selector'} || '#content';
+ 
+        $document->find($wrapper_selector)
+                 ->append($stash->{'mojo.content'}->{content});
+    }
+
     # pass the rendered result back to the renderer
     $$output = defined $c->res->body && length $c->res->body
         ? $c->res->body
