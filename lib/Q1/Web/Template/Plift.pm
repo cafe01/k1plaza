@@ -13,6 +13,9 @@ use Mojo::File 'path';
 use Try::Tiny;
 use Q1::Web::Template::Plift::jQuery;
 use Q1::Utils::Properties;
+use YAML::XS ();
+use Text::Markdown::Discount qw/markdown /;
+Text::Markdown::Discount::with_html5_tags();
 
 use constant {
     XML_DOCUMENT_NODE => 9,
@@ -189,7 +192,6 @@ sub _get_new_id {
     return $self->{_last_id}++;
 }
 
-
 sub parse_html {
     my ($self, $source) = @_;
     j($source);
@@ -210,7 +212,27 @@ sub load_template {
     die qq{Can't read from file "$template_file": $!} unless defined $ret;
     undef $handle;
 
+    # convert markdown    
+    if ($template_file->basename =~ /\.md$/) {
+
+        # extract meta
+        $html_source =~ s/^\s*---\n(.*?)---\n//s;
+        if ($1) {
+            my $template_meta = YAML::XS::Load($1);
+            my $metadata = $self->metadata;
+            $metadata->{$_} = $template_meta->{$_} for keys %$template_meta;
+        }
+
+        $html_source = markdown($html_source);
+    }
+
+    # parse markdown or html
     my $dom = $self->parse_html($html_source);
+
+    # parse metadata
+    $dom->document->find("x-meta")->each(sub {
+        $self->run_snippet('meta', $_);
+    });
 
     # check for data-plift-template attr, and use that element
     my $body = $dom->find('body[data-plift-template]')->first;
@@ -290,10 +312,13 @@ sub find_template_file {
 
     foreach my $path (@{$self->include_path}) {
 
-        push @try_files,
-            $territory ? "$path/$template_name"."_$lang"."$territory.html" : (),
-            $lang ? "$path/$template_name"."_$lang.html" : (),
-            "$path/$template_name.html";
+        for my $ext (qw/ html md/) {
+
+            push @try_files,
+                $territory ? "$path/$template_name"."_$lang"."$territory.$ext" : (),
+                $lang ? "$path/$template_name"."_$lang.$ext" : (),
+                "$path/$template_name.$ext";
+        }
     }
 
     foreach my $file (@try_files) {
