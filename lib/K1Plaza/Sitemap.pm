@@ -52,11 +52,11 @@ sub from_source {
 
         # create "under" for child routes
         my $route = $routes->under($route_path, $route_contraints||())
-                           ->name("path-$name_suffix")
+                           ->name($page->{path_only} ? "path-$name_suffix" : "page-$name_suffix")
                            ->to({ %$route_defaults, %$page});
 
         # under-root endpoint
-        $route->get("/")->to($page)->name("page-$name_suffix")
+        $route->get("/")->to($page)->name("page-$name_suffix-root")
             unless $page->{path_only};
 
         # widget args
@@ -111,6 +111,7 @@ sub from_source {
 
 sub from_dir {
     my ($class, $root_dir, $c) = @_;
+    die "missing second arg 'c'" unless $c;
     my $plift = $c->plift;
 
     my $root_page;
@@ -118,37 +119,58 @@ sub from_dir {
     my $process = sub {
         my ($routes, $files) = @_;
 
-        foreach my $file (sort $files->each) {
+        my @sorted = sort {
+            -d $a cmp -d $b
+                ||
+            $a cmp $b
+        } $files->each;
+
+        foreach my $file (@sorted) {
 
             my $basename = $file->basename;
 
             # dir
             if (-d $file) {
                 my $fullpath = $file->to_rel($root_dir)->to_string;
-                my $under = $routes->under($basename)
-                                   ->name("path-".($fullpath =~ s/\//-/rg));
+
+                my $name_suffix = $fullpath =~ s/\//-/rg;
+                my $under;
+                if ($under = $routes->find("page-$name_suffix")) {
+
+                    # add root endpoint
+                    $under->get("/")->name("page-$name_suffix-root")
+
+                }
+                else {
+                    $under = $routes->under($basename)
+                                    ->to({ title => $basename })
+                                    ->name("path-$name_suffix");
+                }
 
                 __SUB__->($under, $file->list({ dir => 1 }));
             }
 
-            # not html file
-            next unless $basename =~ /\.html$/;
-            $basename =~ s/\.html$//;
+            # valid template formats: html and md
+            my $valid_formats = qr/\.(?:html|md)$/;
+            next unless $basename =~ $valid_formats;
+            $basename =~ s/$valid_formats//;
 
             # ignore alternative templates
-            next if $basename =~ /\.single$/;
+            next if $basename =~ /\./;
 
             # fullpath
             my $fullpath = $file->to_rel($root_dir)->to_string;
-            $fullpath =~ s/\.html$//;
+            $fullpath =~ s/$valid_formats//;
 
             # extract other sitemap page options from <x-meta> elements
+            local $plift->{metadata} = {};
             local $plift->{context} = {};
             local $plift->{include_path} = [$root_dir];
             my $page_dom = $plift->load_template($fullpath);
-            $plift->process_element($page_dom, { allowed_snippets => qr/^meta$/ });
             my $page = $plift->metadata;
-            # p $page_options;
+
+            # default title
+            $page->{title} //= $basename;
 
             # root page
             $root_page = $page if $page->{is_root};
@@ -156,8 +178,8 @@ sub from_dir {
             # simple route (no children expected)
             $page->{fullpath} = $fullpath;
             my $name_suffix = $fullpath =~ s/\/:?/-/gr;
-            my $route_path = join '/', $fullpath, $page->{args} || ();
-
+            my $route_path = join '/', $basename, $page->{args} || ();
+            
             unless ($page->{widget_args}) {
                 $routes->get($route_path)->to($page)->name("page-$name_suffix");
                 next;
@@ -165,16 +187,14 @@ sub from_dir {
 
             # create "under" for child routes
             my $route = $routes->under($route_path)
-                               ->name("path-$name_suffix")
+                               ->name("page-$name_suffix")
                                ->to($page);
-
-            # under-root endpoint
-            $route->get("/")->to($page)->name("page-$name_suffix")
-                unless $page->{path_only};
+                            
+            $route->get("/")->name("page-$name_suffix-root");
 
             # widget args
             my $widget;
-            if (($widget = $c->widget($page->{widget_args})) && $widget->can('routes')) {
+            if ($c->has_app_instance && ($widget = $c->widget($page->{widget_args})) && $widget->can('routes')) {
 
                 foreach my $widget_route (@{$widget->routes}) {
                     my $inner = $route->get(@$widget_route);
@@ -200,73 +220,47 @@ sub from_dir {
     $sitemap->get('/')->to($root_page)->name('website-root')
         if $root_page;
 
+
     $sitemap;
 }
 
 
 
 sub page_tree {
-    my ($self) = @_;
+    my ($self, $root_route) = @_;
     my @tree;
     my $stack = [\@tree];
     my $current_depth = 0;
     my $last_node;
 
-    $self->walk(sub {
+    $root_route //= '.';
+
+    $self->walk($root_route, sub {
         my ($node, $route, $depth) = @_;
 
         if ($depth > $current_depth) {
+
             $last_node->{children} = [];
             push @$stack, $last_node->{children};
         }
         elsif ($depth < $current_depth) {
-            pop @$stack;
+            my $steps = $current_depth - $depth;
+            pop @$stack for (1 .. $steps);
         }
 
         push @{$stack->[-1]}, $node;
-
-        $current_depth = $depth;
         $last_node = $node;
+        $current_depth = $depth;
     });
 
     \@tree;
 }
-# sub page_tree {
-#     my ($self) = @_;
-#     my $walk = sub {
-#         my ($routes) = @_;
-#         my @items;
-#         foreach my $route (@$routes) {
-#
-#             my %item = %{$route->pattern->defaults};
-#             next if $item{hidden} || $route->name !~ /^(page|path)-/;
-#             my @children = @{$route->children};
-#             if(@children) {
-#
-#                 # a "/" children is the actual current item we want
-#                 if (($children[0]->pattern->unparsed || '/') eq '/') {
-#                     %item = %{shift(@children)->pattern->defaults};
-#                 }
-#
-#                 # submenu
-#                 $item{children} = __SUB__->(\@children);
-#                 delete $item{children} unless @{$item{children}};
-#             }
-#             else {
-#                 $item{leaf} = 1;
-#             }
-#
-#             push @items, \%item;
-#         }
-#         \@items;
-#     };
-#
-#     $walk->($self->children);
-# }
 
 
 sub walk {
-    my ($self, $cb) = @_;
+    my ($self, $root_route, $cb) = @_;
+
+    confess "using old signature" if ref $root_route;
 
     my $walk = sub {
         my ($routes, $depth) = @_;
@@ -277,15 +271,19 @@ sub walk {
             next if $route->name !~ /^(page|path)-/;
             $item{route} = $route->name;
 
+            # skip page-*-root as it would appear as duplicate and child of actual node
+            next if $route->name =~ /^page-.*-root$/;
+
+            # process
             $cb->(\%item, $route, $depth);
 
             my @children = @{$route->children};
             if(@children) {
 
                 # a "/" children is the actual current item we want
-                if (($children[0]->pattern->unparsed || '/') eq '/') {
-                    %item = %{shift(@children)->pattern->defaults};
-                }
+                # if (($children[0]->pattern->unparsed || '/') eq '/') {
+                #     %item = %{shift(@children)->pattern->defaults};
+                # }
 
                 # sub items
                 __SUB__->(\@children, $depth + 1);
@@ -293,8 +291,11 @@ sub walk {
         }
     };
 
-    $walk->($self->children, 0);
+    my $nodes = $root_route eq '.' 
+        ? $self->children
+        : $self->find($root_route)->children;
 
+    $walk->($nodes, 0);
 }
 
 

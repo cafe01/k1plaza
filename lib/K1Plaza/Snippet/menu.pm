@@ -2,7 +2,8 @@ package K1Plaza::Snippet::menu;
 
 use Mojo::Base -base;
 use Data::Printer;
-
+use K1Plaza::Sitemap;
+use Mojo::File 'path';
 
 has 'engine' => sub { die 'required' };
 
@@ -30,7 +31,8 @@ sub process {
 
     # no template
     return unless $item_tpl->size;
-
+    
+    
     # static menu
     if ($item_tpl->size > 1) {
 
@@ -49,11 +51,15 @@ sub process {
         return;
     }
 
+    # render sitemap
+    my $sitemap = $tx->sitemap || $tx->app->routes->find("website") || die "[x-menu] no sitemap found!";
+
     # render menu
     my $menu_tpl = $item_tpl->parent;
     $item_tpl->detach;
 
-    my $page_tree = $tx->sitemap->page_tree;
+    my $page_tree = $sitemap->page_tree($params->{root});
+    
     my $rendered_menu = $self->_render_menu($page_tree, $item_tpl, $menu_tpl);
     $menu_tpl->replace_with($rendered_menu);
 }
@@ -83,7 +89,8 @@ sub _render_menu_item {
     $label_tpl->text($item->{menu_label} || $item->{title});
 
     # path class
-    my $path_class = $item->{fullpath};
+    my $path_class = $item->{route} || $item->{fullpath};
+    p $item unless $path_class;
     $path_class =~ tr/\//-/;
     $rendered_item->add_class("menu-item-$path_class");
 
@@ -92,16 +99,16 @@ sub _render_menu_item {
 
         $_->add_class("link-to-$path_class");
 
-        if ($item->{path_only}) {
-            $_->remove_attr('href');
+        if ($item->{route} && $item->{route} =~ /^page-/) {
+            $_->attr('href', $tx->url_for($item->{route})->to_abs->to_string)
         } else {
-            $_->attr('href', $tx->uri_for_page($item));
+            $_->remove_attr('href');
         }
     });
 
     # active item
-
-    if (exists $tx->stash->{fullpath} && $tx->stash->{fullpath} eq $item->{fullpath}) {
+    my $current_route = $tx->match ? $tx->match->endpoint : undef;
+    if ($current_route && $item->{route} && $current_route->name eq $item->{route}) {
         $rendered_item->add_class($self->active_class)->find('a')->add_class($self->active_class);
     }
 

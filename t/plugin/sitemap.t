@@ -8,6 +8,8 @@ use Mojo::Util qw(encode getopt tablify);
 # my $app = app();
 my $t = Test::Mojo->new;
 $t->app(app());
+app->schema->deploy({ add_drop_table => 1 });
+
 
 my $c = app->build_controller;
 my $api = app->api('AppInstance');
