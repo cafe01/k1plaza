@@ -1,6 +1,8 @@
 import { FormField } from "k1/form/field"
 
 export class SubmitField extends FormField {
+    type: 'submit'
+    
     constructor(config) {
 
         config.name     = config.name || 'submit'

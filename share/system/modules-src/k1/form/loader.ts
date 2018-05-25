@@ -1,6 +1,8 @@
 declare var require: any
 
 import { Form } from 'k1/form'
+import * as k1 from 'k1'
+
 
 class FormLoader {
     

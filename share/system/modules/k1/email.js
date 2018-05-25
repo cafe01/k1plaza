@@ -1,6 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+/**
+* Utilize essa classe para criar e enviar emails.
+*
+*/
 var Email = /** @class */ (function () {
+    /**
+    * Novo email.
+    * @param params: Configuração do email a ser enviado.
+    */
     function Email(params) {
         this.from = null;
         this.to = null;
