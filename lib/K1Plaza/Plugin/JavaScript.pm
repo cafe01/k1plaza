@@ -8,6 +8,7 @@ use Q1::Web::Template::Plift::jQuery;
 use Cwd qw/ getcwd /;
 use K1Plaza::JS::Request;
 use K1Plaza::JS::Flash;
+use K1Plaza::JS::Stash;
 use K1Plaza::JS::Console;
 use K1Plaza::JS::Jobs;
 
@@ -153,6 +154,7 @@ sub _build_context {
     };
 
     $modules->{'k1/flash'} = K1Plaza::JS::Flash->new($c);
+    $modules->{'k1/stash'} = K1Plaza::JS::Stash->new($c);
 
 
     # return
