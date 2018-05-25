@@ -17,14 +17,14 @@ if (!params.html) {
 value = tx.api("Data").get(key);
 
 if (value != null) {
-  console.log("Data value:", value);
+  // console.log("Data value:", value);
   if (params.html) {
     element.html(value);
   } else {
     element.text(value);
   }
 } else {
-  console.log("No value for ", key);
+  // console.log("No value for ", key);
 }
 
 element.attr('keep-x-tag', 1);

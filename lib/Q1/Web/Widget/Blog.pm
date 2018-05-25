@@ -44,7 +44,7 @@ has_config 'og_image_crop',       isa => 'Bool', default => 1;
 
 has_config 'disable_cover',       isa => 'Bool', default => 0;
 has_config 'cover_ratio',        isa => 'Num', default => 1.33;
-has_config 'url_format', default => '/year/month/day/permalink';
+has_config 'url_format', default => '/year/month/day/permalink', is_parameter => 1;
 
 # arguments
 has_config 'noarguments', lazy => 1, default => sub {

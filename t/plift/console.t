@@ -5,7 +5,7 @@ use strict;
 use FindBin;
 use lib 'lib';
 use Data::Dumper;
-use Q1::JavaScript::Context;
+use JavaScript::V8::CommonJS;
 
 BEGIN {
     use_ok 'Q1::Web::Template::Plift';
@@ -15,7 +15,7 @@ my $plift = Q1::Web::Template::Plift->new(
     include_path => [$FindBin::Bin ."/templates/filter/"],
     environment => 'development',
     filters => ['Console'],
-    javascript_context => Q1::JavaScript::Context->new( time_limit => 5 )
+    javascript_context => JavaScript::V8::CommonJS->new( time_limit => 5 )
 );
 
 $plift->context->{console} = [

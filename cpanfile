@@ -16,12 +16,16 @@ requires 'Minion::Backend::mysql' => 0.13;
 requires 'Mojolicious::Plugin::Facets' => 0.07;
 
 # Other
+requires 'Module::Runtime' => 0.016;
 requires 'Ref::Util';
 requires 'DBIx::EAV' => 0.11;
 
 requires 'Moo' => '1.003000';
 requires 'Moose';
+
 requires 'MooseX::Clone' => 0.05;
+requires 'MooseX::Types';
+requires 'MooseX::Types::Common';
 requires 'List::Compare' => 0.37;
 
 requires 'Unicode::Normalize' => 1.14;
@@ -82,7 +86,7 @@ requires 'Devel::TimeStats' => 0.03;
 requires 'Try::Tiny' => 0.016;
 requires 'Type::Tiny' => 0.014;
 requires 'Unicode::UTF8' => 0.59;
-requires 'JavaScript::V8::CommonJS' => 0.05;
+requires 'JavaScript::V8::CommonJS' => 0.07;
 requires 'YAML::Any' => 0.84;
 requires 'YAML::XS' => 0.41;
 requires 'CSS::Sass' => '3.4.5';
@@ -93,3 +97,5 @@ requires 'JSON::XS' => 3.01;
 requires 'Imager';
 requires 'Imager::File::PNG';
 requires 'Imager::File::JPEG';
+
+requires 'Text::Markdown::Discount';
