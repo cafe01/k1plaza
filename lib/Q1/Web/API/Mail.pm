@@ -72,9 +72,14 @@ sub new_mail {
     	$params->{attachments} = [$params->{attachments}] unless ref $params->{attachments} eq 'ARRAY';
     	foreach my $attachment (@{$params->{attachments}}) {
 			
-            # my ($path, $filename, $opts) = ref $file ? @$file : ($file, path($file)->basename);
-            die "This attachment spec is not a hashref! its a ".ref($attachment)
-                unless ref $attachment eq 'HASH';
+            if (ref $attachment eq 'ARRAY') {
+                
+                $attachment = {                
+                    path => $attachment->[0],
+                    filename => $attachment->[1],                
+                    %{$attachment->[2] || {}}
+                };
+            }
 		    
             $mail->attach(
 		        # Path     => $path,
