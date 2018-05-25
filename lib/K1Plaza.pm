@@ -6,6 +6,7 @@ use FindBin;
 use Cwd qw/ getcwd /;
 use Q1::Utils::Properties;
 use K1Plaza::Schema;
+use K1Plaza::Sitemap;
 use YAML::Any;
 use Mojo::Util 'getopt';
 use Mojo::URL;
@@ -13,6 +14,27 @@ use Mojo::Loader qw/ load_class /;
 use Hash::Merge qw/ merge /;
 use Data::Printer;
 use feature 'current_sub';
+
+# preload
+# use DBIx::Class::API;
+# use K1Plaza::API::AppInstance;
+# use K1Plaza::API::AWS;
+# use K1Plaza::API::Blog;
+# use K1Plaza::API::Category;
+# use K1Plaza::API::Data;
+# use K1Plaza::API::EAV;
+# use K1Plaza::API::Expo;
+# use K1Plaza::API::Facebook;
+# use K1Plaza::API::Google;
+# use K1Plaza::API::Instagram;
+# use K1Plaza::API::Mail;
+# use K1Plaza::API::Media;
+# use K1Plaza::API::MediaCollection;
+# use K1Plaza::API::Role;
+# use K1Plaza::API::Tag;
+# use K1Plaza::API::User;
+# use K1Plaza::API::Widget;
+# /preload
 
 has home => sub {
     my $path = $ENV{K1PLAZA_HOME} || getcwd;
@@ -111,6 +133,8 @@ sub startup {
     });
 
     # plugins
+    $self->plugin("K1Plaza::Plugin::Plift");
+
     $self->plugin("Facets",
         $config->{backoffice_host} ? (
         backoffice => {
@@ -135,7 +159,7 @@ sub startup {
 
     # Sitemap must be last
     $self->plugin("K1Plaza::Plugin::$_")
-        for qw/ Apis AppInstances Plift Widgets Forms Users Medias JavaScript ImageScale Sitemap /;
+        for qw/ Apis AppInstances Widgets Forms Users Medias JavaScript ImageScale Sitemap /;
 
     $log->info("K1Plaza started in ".$self->mode." mode.");
 }
@@ -297,17 +321,26 @@ sub _setup_developer {
 
     $app->plugin('K1Plaza::Plugin::Shortcuts');
 
-    my $routes = $app->routes;
-    my $r = $routes->under([format => 0 ]);
+    my $r = $app->routes;
 
     $app->sessions->cookie_name('k1developer');
-    @{$app->routes->namespaces} = qw/ K1Plaza::Developer /;
+    unshift @{$app->routes->namespaces}, "K1Plaza::Developer";
     unshift @{$app->static->paths},   $app->home->child('share/developer/static')->to_string;
     unshift @{$app->renderer->paths}, $app->home->child('share/developer/template')->to_string;
 
-    $r->get('/' => { template => 'index', handler => 'plift' });
-    $r->get('/starters' => { template => 'starters', handler => 'plift' })->name('developer-starters');
-    $r->get('/config' => { template => 'config', handler => 'plift' })->name('developer-settings');
+    my $sitemap = K1Plaza::Sitemap->from_dir($app->home->child("share/developer/template/page"), $app);
+    $sitemap->name("website")->to("render_page#default");
+    # push @{$r->{children}}, @{$sitemap->children};
+    $r->add_child($sitemap);
+
+    # $r->get('/' => { template => 'index', handler => 'plift' });
+    # $r->get('/starters' => { template => 'starters', handler => 'plift' })->name('developer-starters');
+    # $r->get('/config' => { template => 'config', handler => 'plift' })->name('developer-settings');
+    # $r->get('/docs/*docpage' => { 
+    #     docpage => 'welcome',
+    #     template => 'docs', 
+    #     handler => 'plift' })->name('developer-docs');
+    
     my $project = $r->resource('project');
     $project->post('select')->to('#select_project');
     $project->websocket('ws/create')->to('#ws_create');

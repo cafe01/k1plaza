@@ -1,0 +1,129 @@
+<x-meta title="Projetos" layout="default" />
+
+<div class="row" ng-controller="Projects as vm" ng-show="vm.ready" ng-cloak>
+
+    <div class="col-6">
+        <div class="btn-group" uib-dropdown >
+            <button ng-click="vm.chooseStarter()" ng-disabled="vm.loading" class="btn btn-dark">Novo Projeto</button>
+            <button class="btn btn-dark" uib-dropdown-toggle ng-disabled="vm.loading"></button>
+
+            <div class="dropdown-menu" uib-dropdown-menu role="menu">
+                <a ng-click="vm.importProject()" class="dropdown-item" disabled>Importar do GitHub</a>
+                <a href="/starters" class="dropdown-item">Escolher Starter Kit</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 mb-2">
+        <div class="input-group">
+            <input type="text" class="form-control" ng-model="vm.query" ng-change="vm.search()" ng-model-options='{ debounce: 250 }'
+                    placeholder="Procurar">
+            <div class="input-group-append">
+                <button class="btn" ng-show="vm.query" ng-click="vm.query = ''; vm.search()">X</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <td class="border-0">Projetos</td>
+                    <td class="border-0" width="240"></td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td ng-show="!vm.projects.items">Carregando... </td>
+                    <td ng-show="vm.projects.items.length == 0">Nenhum projeto encontrado.</td>
+                </tr>
+                <tr ng-repeat="p in vm.projects.items">
+                    <td>
+
+                        <!-- git status badges -->
+                        <!-- <div class="float-right" ng-init="s = p.git.status">
+                            <span ng-if="s.new" title="Arquivos adicionados" class="badge badge-light mr-2 position-relative">
+                                <span class="text-primary"><i class="fa fa-plus"></i></span>
+                            <span class="badge badge-light align-top position-absolute" style="bottom:-7px; right:-5px;">{{ s.new.length }}</span>
+                            </span>
+                            <span ng-if="s.deleted" title="Arquivos deletados" class="badge badge-light mr-2 position-relative">
+                                <span class="text-warning"><i class="fa fa-minus"></i></span>
+                            <span class="badge badge-light align-top position-absolute" style="bottom:-7px; right:-5px;">{{ s.deleted.length }}</span>
+                            </span>
+                            <span ng-if="s.renamed" title="Arquivos renomedos" class="badge badge-light mr-2 position-relative">
+                                <span class="text-info"><i class="fa fa-sync"></i></span>
+                            <span class="badge badge-light align-top position-absolute" style="bottom:-7px; right:-5px;">{{ s.renamed.length }}</span>
+                            </span>
+                            <span ng-if="s.modified" title="Arquivos alterados" class="badge badge-light mr-2 position-relative">
+                                <span class="text-success"><i class="fa fa-pencil-alt"></i></span>
+                            <span class="badge badge-light align-top position-absolute" style="bottom:-7px; right:-5px;">{{ s.modified.length }}</span>
+                            </span>
+                            <span ng-if="s.conflicted" title="Arquivos conflitados" class="badge badge-light mr-2 position-relative">
+                                <span class="text-danger"><i class="fa fa-bomb"></i></span>
+                            <span class="badge badge-light align-top position-absolute" style="bottom:-7px; right:-5px;">{{ s.conflicted.length }}</span>
+                            </span>
+                        </div> -->
+
+                        <!-- project menu -->
+                        <div class="btn-group" uib-dropdown >
+
+                            <button ng-click="vm.select(p)" ng-disabled="vm.loading" uib-tooltip="Abrir {{p.name}}" tooltip-popup-delay='1000' class="btn btn-light text-left text-truncate" style="width:12em">
+                                <i class="fa fa-fw fa-folder"></i> {{ p.name }}
+                            </button>
+                            <button class="btn btn-light" uib-dropdown-toggle ng-disabled="vm.loading"></button>
+
+                            <div class="dropdown-menu" uib-dropdown-menu role="menu">
+                                <a ng-click="vm.select(p)" class="dropdown-item">/</a>
+                                <a ng-click="vm.select(p, '/.backend')" class="dropdown-item">/.backend <i class="fa fa-fw fa-key"></i>  </a>
+                                <div class="dropdown-divider"></div>
+                                <a ng-click="vm.select(p, page.fullpath)" class="dropdown-item" ng-repeat="page in p.sitemap.list">/{{ page.fullpath }} - {{ page.title }}</a>
+                            </div>
+                        </div>
+
+                        <!-- widget badges -->
+                        <div class="d-inline-block">
+                            <span class="badge badge-light mr-2 position-relative" ng-repeat="(type, count) in p.widgets">
+                                <span class="text-muted">{{ type }}</span>
+                            <span class="badge badge-light align-top position-absolute" style="bottom:-7px; right:-5px;">{{ count }}</span>
+                            </span>
+                        </div>
+
+                    </td>
+
+                    <td>
+                        <p>
+                            <a ng-if="p.git" class="text-muted mr-2" uib-tooltip="{{p.git.status.line}}" ng-href="{{ p.git.http_url }}" target="{{ p.git.last_commit }}">
+                                <i class="fab fa-github"></i>
+                            </a>
+                            <i ng-if="!p.git" class="fab fa-github text-danger" title="Sem controle de versão!"></i>
+                            <span class="mr-2" uib-tooltip="{{ p.git.last_commit.author.name }}">
+                                {{ p.git.last_commit.time.fromNow() }}
+                            </span>
+                            <small>
+                                <a class="text-info" uib-tooltip="{{ p.git.last_commit.message}}" ng-href="{{ p.git.last_commit.url }}" >{{ p.git.last_commit.id.substr(0, 8) }}</a>
+                            </small>
+                        </p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <div class="col-12">
+
+        <!-- <div class="btn-group float-left mr-4" uib-dropdown>
+            <button type="button" class="btn btn-light" uib-dropdown-toggle>
+                {{vm.limit}} <span class="caret"></span>
+            </button>
+            <div class="dropdown-menu" uib-dropdown-menu role="menu">
+                <a class="dropdown-item" ng-click="vm.setLimit(10)">10</a>
+                <a class="dropdown-item" ng-click="vm.setLimit(20)">20</a>
+            </div>
+        </div> -->
+
+        <ul class="pagination justify-content-center" uib-pagination total-items="vm.projects.total" ng-model="vm.page" ng-change="vm.load()" ng-disabled="vm.loading" previous-text="🡨" next-text="🡺">
+        </ul>
+
+    </div>
+</div>

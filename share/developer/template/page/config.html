@@ -1,0 +1,24 @@
+<x-meta title="Configurações" layout="default" />
+
+
+<style>
+    .hide-tab-nav ul.nav.nav-tabs { display: none; }
+</style>
+
+<div class="row mb-5" ng-controller="Settings as vm" ng-show="vm.settings" ng-cloak>
+
+    <!-- setup wizard -->
+    <div class="col hide-tab-nav" ng-show="vm.settings.initial_setup">
+
+        <x-include name="page/config.setup" />
+
+    </div>
+
+    <!-- update setting -->
+    <div class="col" ng-show="!vm.settings.initial_setup">
+
+        <x-include name="page/config.update" />
+
+    </div>
+
+</div>

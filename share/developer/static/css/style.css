@@ -1,6 +1,3 @@
-x-menu .active .nav-link {
-  color: #007bff !important; }
-
 .project-starters .starter-item {
   transition-property: opacity;
   transition-duration: 250ms; }
@@ -18,5 +15,9 @@ x-menu .active .nav-link {
     box-shadow: 0 0 5px 0 #343a40; }
   .project-starters .starter-item .card-title::first-letter {
     margin-left: 20px; }
+
+x-menu.docs ul.sub-menu .nav-link {
+  padding-left: 2.5em;
+  font-size: 0.9em; }
 
 /*# sourceMappingURL=style.css.map */

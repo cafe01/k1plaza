@@ -112,12 +112,16 @@ sub list {
             ? $self->tx->app->loadConfigFile($dir->child("skin/$app_config->{skin}/skin.yml"))->{sitemap}
             : $app_config->{sitemap};
 
-        if ($source) {
-            my $sitemap = K1Plaza::Sitemap->from_source($source);
-            $project->{sitemap}{tree} = $sitemap->page_tree;
-            my $pages = $project->{sitemap}{list} = [];
-            $sitemap->walk(sub { push @$pages, shift });
-        }
+        my $sitemap = $source
+            ? K1Plaza::Sitemap->from_source($source)
+            : K1Plaza::Sitemap->from_dir($dir->child("template/page"), $self->tx);
+
+        $project->{sitemap}{tree} = $sitemap->page_tree;
+        my $pages = $project->{sitemap}{list} = [];
+        $sitemap->walk('.', sub { 
+            my $item = shift;
+            push @$pages, $item if $item->{route} =~ /^page/;
+        });
 
         # registered
         my $registered = $app_instances->resultset->single({ base_dir => "$dir" });

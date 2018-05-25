@@ -1,0 +1,3 @@
+
+
+# Arquivos Estáticos
