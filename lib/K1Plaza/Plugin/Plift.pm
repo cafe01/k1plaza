@@ -60,6 +60,9 @@ sub _render {
     # static_path
     local $plift->{static_path} = $app->static->paths;
 
+    # snippet namespaces
+    local $plift->{snippet_path} = [map { $_."::Snippet" } @{$app->routes->namespaces}];
+
     # snippet
     local $plift->{javascript_include_path} = [map { path($_)->sibling('snippet')->to_string } @{$plift->static_path}];
 

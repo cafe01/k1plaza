@@ -10,6 +10,7 @@ use Data::Dumper;
 use Devel::TimeStats;
 use Class::Load;
 use Mojo::File 'path';
+use Mojo::Util 'encode';
 use Try::Tiny;
 use Q1::Web::Template::Plift::jQuery;
 use Q1::Utils::Properties;
@@ -218,7 +219,7 @@ sub load_template {
         # extract meta
         $html_source =~ s/^\s*---\n(.*?)---\n//s;
         if ($1) {
-            my $template_meta = YAML::XS::Load($1);
+            my $template_meta = YAML::XS::Load(encode 'UTF-8', $1);
             my $metadata = $self->metadata;
             $metadata->{$_} = $template_meta->{$_} for keys %$template_meta;
         }
