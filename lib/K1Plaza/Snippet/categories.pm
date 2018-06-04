@@ -39,8 +39,9 @@ sub get_data {
     my $sitemap = $tx->sitemap;
     $api->add_object_formatter(sub {
         my $item = $_[2];
-        $item->{link} = $tx->url_for($sitemap->path_for("widget-${\ $widget->name }-category-category", category => $item->{slug}))
-                           ->to_abs->to_string;
+        $item->{link} = $tx->site_url_for("widget-${\ $widget->name }-category-category", { category => $item->{slug} })
+            and $item->{link} = $item->{link}->to_abs->to_string;
+                           
     });
 
     $api->list->result;

@@ -146,6 +146,7 @@ sub process {
 
             $tpl->find('.blog-post-title')
                 ->attr('data-editable', $key_prefix.'.title')
+                ->attr('data-ce-tag', 'p')
                 ->attr('data-fixture', '');
 
             $tpl->find('.blog-post-content')->attr('data-editable', $key_prefix.'.content');
@@ -223,7 +224,7 @@ sub _render_post_tags {
 
         $template->find('.blog-post-'.$stuff.'-link')
             ->text($tag->{name})
-            ->attr('href', $tx->uri_for($self->widget->page_path, [$stuff, $tag->{slug}]))
+            ->attr('href', $tx->site_url_for("widget-${\ $self->widget->name }-$stuff-$stuff", { $stuff => $tag->{slug} } ))
             ->attr('data-editable', "$stuff.$tag->{id}.name")
             ->attr('data-ce-tag', 'p')
             ->attr('data-fixture', '');
