@@ -2,6 +2,7 @@ package K1Plaza::Controller::Form;
 use Mojo::Base 'Mojolicious::Controller';
 use Data::Printer;
 
+
 sub process {
     my ($c) = @_;
     my $log = $c->app->log;
@@ -31,16 +32,16 @@ sub process {
 sub _process_js {
     my ($c, $form_name) = @_;
     my $log = $c->log;
-    
+    my $temp_dir = $c->app->home->child('file_storage/temp/');
+    $temp_dir->make_path;
+
     # prepare params and uploads
     my $params = $c->req->json || $c->req->params->to_hash;
     for my $upload (@{$c->req->uploads}) {
         
         next unless $upload->size && $upload->filename;
         
-        my $asset = $upload->asset;
-        $asset = $asset->to_file unless $asset->is_file;
-        $asset->cleanup(0);
+        my $asset = $upload->asset->to_file->move_to($temp_dir->child("upload.".time.rand(999)));
 
         $params->{$upload->name} = {
             type => $upload->headers->content_type,
