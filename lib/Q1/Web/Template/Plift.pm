@@ -7,7 +7,7 @@ use namespace::autoclean;
 use Carp;
 use URI;
 use Data::Dumper;
-use Devel::TimeStats;
+# use Devel::TimeStats;
 use Class::Load;
 use Mojo::File 'path';
 use Mojo::Util 'encode';
@@ -50,7 +50,6 @@ has 'profiler' => (
     lazy => 1,
     #isa => 'Devel::TimeStats',
     predicate => 'has_profiler',
-    default => sub{ Devel::TimeStats->new( enable => shift->enable_profiler )},
     clearer => 'reset_profiler'
 );
 

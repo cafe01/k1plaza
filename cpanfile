@@ -7,7 +7,7 @@ requires 'EV' => 4.22;
 requires 'IO::Socket::Socks' => 0.74;
 requires 'IO::Socket::SSL' => 2.056;
 requires 'Net::DNS::Native' => 0.18;
-requires 'Mojolicious' => '== 7.75';
+requires 'Mojolicious' => '== 7.82';
 
 # Mojolicous Plugins
 requires 'Mojolicious::Plugin::CHI';
@@ -65,7 +65,7 @@ requires 'HTML::Strip' => 2.09;
 requires 'CHI' => 0.58;
 requires 'CHI::Driver::Memcached' => 0.15;
 requires 'Cache::Memcached::Fast' => 0.19;
-requires 'Cache::FastMmap';
+#requires 'Cache::FastMmap';
 
 # db drivers
 requires 'DBD::mysql';
@@ -79,10 +79,8 @@ requires 'MIME::Base64';
 requires 'Authen::SASL';
 requires 'Git::Raw' => "== 0.79";
 requires 'Data::Printer' => 0.35;
-requires 'Routes::Tiny' => 0.14;
 requires 'Digest::MurmurHash' => 0.11;
 requires 'Digest::SHA' => 6.01;
-requires 'Devel::TimeStats' => 0.03;
 requires 'Try::Tiny' => 0.016;
 requires 'Type::Tiny' => 0.014;
 requires 'Unicode::UTF8' => 0.59;
