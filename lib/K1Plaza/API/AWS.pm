@@ -31,7 +31,7 @@ sub upload_s3_file {
         'Content-Disposition' => qq/$disposition_type; filename="$params->{filename}"/,
         'x-amz-acl' => $params->{acl} || 'private',
     );
-    my $tx = $ua->build_tx(PUT => "https://$params->{bucket}.s3.amazonaws.com/$params->{key}" => \%headers => $file->slurp);
+    my $tx = $ua->build_tx(PUT => "http://$params->{bucket}.s3.amazonaws.com/$params->{key}" => \%headers => $file->slurp);
     $self->_sign_request($tx->req);
 
     # warn $tx->req->headers->to_string;
