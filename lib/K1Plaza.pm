@@ -290,7 +290,7 @@ sub _setup_backoffice {
     my $routes = $app->routes;
     my $r = $routes->under([format => 0])->to('login#access_check');
 
-    @{$app->routes->namespaces} = qw/ K1Plaza::Backoffice /;
+    unshift @{$app->routes->namespaces}, "K1Plaza::Backoffice";
     unshift @{$app->static->paths},   $app->home->child('share/backoffice/static')->to_string;
     unshift @{$app->renderer->paths}, $app->home->child('share/backoffice/template')->to_string;
 
