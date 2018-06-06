@@ -19,7 +19,7 @@ has 'tx' => sub {
 has 'widget' => sub {
     my $self = shift;
     $self->tx->widget($self->name, {
-        fixtures => $self->fixtures
+        $self->fixtures ? (fixtures => $self->fixtures) : ()
     });
 };
 

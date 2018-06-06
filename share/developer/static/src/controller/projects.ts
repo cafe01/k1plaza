@@ -73,7 +73,16 @@ developer.controller('Projects', class Projects {
         if (!pagePath.match(/^\//)) pagePath = "/" + pagePath 
 
         this.http.post('/.dev/.resource/project/select', {base_dir: project.base_dir})
-                 .then(() => location.replace(pagePath))
+                 .then(function(){
+                        
+            if (typeof document.body.animate != "function") {
+                location.replace(pagePath)
+                return
+            }
+
+            let animation = document.body.animate([{ opacity: 1 }, { opacity: 0 }], {  duration: 150, fill: "forwards"})
+            animation.onfinish = () => location.replace(pagePath)
+        })
     }
 
 })
