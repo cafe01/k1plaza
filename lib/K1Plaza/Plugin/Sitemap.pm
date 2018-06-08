@@ -22,7 +22,7 @@ sub register {
     # helpers
     $app->helper(sitemap => sub {
         my $c = shift;
-        return if $c->stash->{'mojox.facet'} || !$c->has_app_instance;
+        return unless $c->has_app_instance;
         my $app_instance = $c->app_instance;
         my $key = join '', $app_instance->id, $app_instance->deployment_version || '-', $app_instance->config->{skin} || '-';
         my $sitemap = $CACHE->get($key);

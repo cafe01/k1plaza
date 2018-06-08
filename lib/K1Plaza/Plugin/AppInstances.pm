@@ -72,6 +72,9 @@ sub _setup_backend {
 
     $admin->get('/' => sub {
         my $c = shift;
+
+        $c->sitemap; #vivify
+
         $c->render(
             template => 'backend-v2',
             handler => 'plift'

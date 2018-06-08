@@ -98,6 +98,7 @@
         config.name = config.name  || appConfig.name || ''
         config.appData = appData
         config.csrf_token = tx.csrf_token ? tx.csrf_token() : tx.helpers().csrf_token()
+        config.routes = tx.sitemap().routes()
 
         // cms
         config.templates = appConfig.templates || []
