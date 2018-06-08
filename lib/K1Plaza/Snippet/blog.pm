@@ -195,7 +195,7 @@ sub _render_pager {
 
     # prev
     if ($data->{previous_page}) {
-        $prev->attr( href => 'link pagina '. $data->{previous_page}); # TODO: use correct url
+        $prev->attr( href => $self->tx->url_with->query([page => $data->{previous_page}]) );
     }
     else {
         $prev->remove;
@@ -203,7 +203,7 @@ sub _render_pager {
 
     # next
     if ($data->{next_page}) {
-        $prev->attr( href => 'link pagina '. $data->{next_page} );
+        $next->attr( href => $self->tx->url_with->query([page => $data->{next_page}]) );
     }
     else {
         $next->remove;
