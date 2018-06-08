@@ -65,7 +65,7 @@ sub process {
     # render
     $template->render_data({
         link => { selector => '.category-link', at => '@href' },
-        posts_count => '.category-item-count',
+        posts_count => '.category-item-count, .category-count',
         name => {
             selector => '.category-name',
             callback => sub {

@@ -16,3 +16,4 @@
 /share/system/static/stylesheets/
 /share/backend/static/development/
 /.vscode/
+/.vstags

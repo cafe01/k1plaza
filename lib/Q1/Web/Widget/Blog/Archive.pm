@@ -189,7 +189,7 @@ sub _render_months {
 
     my $schema = {
         label => '.blog-archive-month-label',
-        count => '.blog-archive-month-post-count',
+        count => '.blog-archive-month-post-count, .blog-archive-month-count',
         link  => { '.blog-archive-month-link' => '@href' },
         year_label => '.blog-archive-year-label',
         year_link  => { '.blog-archive-year-link' => '@href' }
