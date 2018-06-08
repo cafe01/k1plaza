@@ -236,7 +236,14 @@ sub page_tree {
     $root_route //= '.';
 
     $self->walk($root_route, sub {
-        my ($node, $route, $depth) = @_;
+        my ($route, $depth) = @_;
+
+
+        my $node = \%{$route->pattern->defaults};
+        return if $route->name !~ /^(page|path)-/    
+            || $route->name =~ /^page-.*-root$/; # skip page-*-root as it would appear as duplicate and child of actual node
+
+        $node->{route} = $route->name;
 
         if ($depth > $current_depth) {
 
@@ -257,6 +264,27 @@ sub page_tree {
 }
 
 
+sub routes {
+
+    my $self = shift;    
+    my %routes;
+
+    $self->walk('.', sub {
+        my $route = shift;
+        my $path = $route->pattern->unparsed;
+        my $parent = $route->parent;
+        while ($parent) {
+            $path = $parent->pattern->unparsed . $path;
+            $parent = $parent->parent;
+        }
+
+        $routes{$route->name} = $path;
+    });
+
+    \%routes;
+}
+
+
 sub walk {
     my ($self, $root_route, $cb) = @_;
 
@@ -267,27 +295,12 @@ sub walk {
         my @items;
         foreach my $route (@$routes) {
 
-            my %item = %{$route->pattern->defaults};
-            next if $route->name !~ /^(page|path)-/;
-            $item{route} = $route->name;
-
-            # skip page-*-root as it would appear as duplicate and child of actual node
-            next if $route->name =~ /^page-.*-root$/;
-
             # process
-            $cb->(\%item, $route, $depth);
+            $cb->($route, $depth);
 
             my @children = @{$route->children};
-            if(@children) {
-
-                # a "/" children is the actual current item we want
-                # if (($children[0]->pattern->unparsed || '/') eq '/') {
-                #     %item = %{shift(@children)->pattern->defaults};
-                # }
-
-                # sub items
-                __SUB__->(\@children, $depth + 1);
-            }
+            # sub items
+            __SUB__->(\@children, $depth + 1) if @children;
         }
     };
 
