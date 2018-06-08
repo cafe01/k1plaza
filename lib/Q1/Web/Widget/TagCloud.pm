@@ -20,14 +20,11 @@ has 'widget' => (
 );
 
 has_param 'source_widget' => ( is => 'rw', isa => 'Str', required => 1);
-has_param 'uri_prefix'    => ( is => 'rw', isa => 'Str', default  => '/tag/');
 has_param 'css_prefix'    => ( is => 'rw', isa => 'Str', default  => 'tag-cloud');
-has_param 'unit'          => ( is => 'rw', isa => 'Str', default  => 'px');
 has_param 'max_font_size' => ( is => 'rw', isa => 'Int', lazy => 1, default => 20 );
 has_param 'min_font_size' => ( is => 'rw', isa => 'Int', lazy => 1, default => 5 );
 
 has_param  'shuffle'       => ( is => 'rw', isa => 'Bool', default => 0 );
-has_param  'skip_font_style' => ( is => 'rw', isa => 'Bool', default => 0 );
 
 
 sub _mangle_cache_key {
@@ -98,13 +95,11 @@ sub render_snippet {
             ->attr('data-fixture', '');
 
         # link
-        my $uri = join $self->uri_prefix =~ /\/$/ ? '' : '/', $self->uri_prefix, $item->{slug};
-        $tpl->find('a')->attr('href', $self->tx->uri_for($uri));
+        my $uri = $self->tx->site_url_for("widget-${\ $self->source_widget }-tag-tag", { tag => $item->{slug} });
+        $tpl->find('a')->attr('href', $uri);
 
         # font-size
-        my $size = sprintf '%.2f%s', $item->{font_size}, $self->unit;
-        $tpl->attr('style', "font-size:$size; $orig_style")
-            unless $self->skip_font_style;
+        $tpl->attr('data-font-size', $item->{font_size});
 
         $container->append($tpl->as_html);
     }
