@@ -3,7 +3,6 @@ package Q1::Web::Widget::YoutubeFeed;
 use namespace::autoclean;
 use Data::Dumper;
 use JSON;
-use LWP::UserAgent;
 use Q1::Moose::Widget;
 use Q1::Util qw/pretty_format_duration/;
 use Number::Format qw/ format_number /;
@@ -19,7 +18,6 @@ has '+cache_duration', default => '3h';
 
 # attributes
 has 'api_key', is => 'ro', lazy => 1, default => sub { shift->app->config->{google}{api_key} };
-has '_ua' => ( is => 'ro', isa => 'LWP::UserAgent', default => sub{ LWP::UserAgent->new( timeout => 5 ) }); # TODO: create app-wide user-agent
 
 # config attributes
 has_config 'channel',  isa => 'Str', is_parameter => 1;
@@ -37,10 +35,10 @@ sub BUILD {
 }
 
 
-
 sub get_data {
-    my ($self) = @_;
-    my $cache = $self->app->cache;
+    my ($self, $tx) = @_;
+
+    my $cache = $tx->cache;
 
     my $max_results = $self->max_results;
     $max_results    = 50 if $max_results > 50;
@@ -48,22 +46,22 @@ sub get_data {
     my $url = $self->playlist ? sprintf "https://www.googleapis.com/youtube/v3/playlistItems?playlistId=%s&part=snippet&key=%s&maxResults=%d", $self->playlist, $self->api_key, $max_results
                               : sprintf "https://www.googleapis.com/youtube/v3/search?order=date&part=snippet&channelId=%s&key=%s&maxResults=%s", $self->channel, $self->api_key, $max_results;
 
-    $self->_compute_data($url)
+    $self->_compute_data($tx, $url)
 }
 
 
 
 sub _compute_data {
-    my ($self, $url) = @_;
+    my ($self, $tx, $url) = @_;
 
-    my $res = $self->_ua->get($url);
+    my $res = $tx->ua->get($url)->result;
 
     unless ($res->is_success) {
-        warn sprintf "Error requesting youtube feed '$url': %d %s", $res->code, $res->status_line;
+        warn sprintf "Error requesting youtube feed '$url': %d %s", $res->code, $res->message;
         return [];
     }
 
-    my $feed = decode_json($res->content);
+    my $feed = $res->json;
     my @videos;
     foreach my $entry (@{ $feed->{items} }) {
 
