@@ -14,6 +14,7 @@ has 'tx' => sub {
 has 'name' => 'expo';
 
 has 'widget';
+has 'template';
 
 
 sub process {
@@ -25,8 +26,9 @@ sub process {
         unless $self->widget;
 
     # load template file
-    if ($element->children->size == 0 && $self->widget->template) {
-        $self->_load_template($self->widget->template, $element);
+    if ($element->children->size == 0 && $self->template) {
+        $element->remove_attr('template');
+        $self->_load_template($self->template, $element);
     }
 
     my $data = $self->widget->data;
@@ -170,6 +172,17 @@ sub _render_albums {
                 }));
             });
 
+            $expo_item->find('.expo-cover-css')->each(sub{
+                my $url = $tx->uri_for_media($expo->{cover}, {
+                    crop   => 1,
+                    width  => $_->attr('data-width')  || $_->attr('width'),
+                    height => $_->attr('data-height') || $_->attr('height'),
+                    zoom   => $_->attr('data-zoom')
+                });
+
+                $_->attr('style', sprintf "%s; background-image:url(%s);", $_->attr('style') || '', $url);
+            });
+
             $expo_item->find('.expo-cover-link')->attr( href => $tx->uri_for_media($expo->{cover}) );
         }
 
@@ -237,6 +250,17 @@ sub _render_medias {
                 height => $_->attr('data-height') || $_->attr('height'),
                 zoom   => $_->attr('data-zoom')
             }));
+        });
+
+        $media_item->find('.expo-media-image-css')->each(sub{
+            my $url = $tx->uri_for_media($media, {
+                crop   => 1,
+                width  => $_->attr('data-width')  || $_->attr('width'),
+                height => $_->attr('data-height') || $_->attr('height'),
+                zoom   => $_->attr('data-zoom')
+            });
+
+            $_->attr('style', sprintf "%s; background-image:url(%s);", $_->attr('style') || '', $url);
         });
 
         # columns
