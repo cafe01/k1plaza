@@ -54,6 +54,11 @@ before 'list' => sub {
         $self->where( locale => $params->{locale} );
     }
 
+    # tag
+    if ($params->{tag}) {
+        $self->list_by_tag($params->{tag})
+    }
+
     $self->with_url
          ->with_tags
          ->with_medias

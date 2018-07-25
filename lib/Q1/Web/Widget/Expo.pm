@@ -42,6 +42,11 @@ has_argument 'permalink', lazy => 1, default => sub {
     $self->noarguments ? undef : $self->tx->stash->{permalink};
 };
 
+has_argument 'tag', lazy => 1, default => sub {
+    my $self = shift;
+    $self->noarguments ? undef : $self->tx->stash->{tag};
+};
+
 # params
 has_param 'locale', lazy => 1, default => sub {
     my $self = shift;
@@ -154,7 +159,7 @@ sub get_data {
     my ($self, $tx)   = @_;
 
     # list
-    my %params = map { $_ => $self->$_ } qw/ start limit permalink include_unpublished locale /;
+    my %params = map { $_ => $self->$_ } qw/ start limit permalink tag include_unpublished locale /;
     my $data = $tx->api('Expo', { widget => $self })->list(\%params)->result;
     die "missing 'is_permalink_result' on expo" if $self->permalink && !$data->{is_permalink_result};
 
