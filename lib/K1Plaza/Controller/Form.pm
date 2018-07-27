@@ -1,7 +1,7 @@
 package K1Plaza::Controller::Form;
 use Mojo::Base 'Mojolicious::Controller';
 use Data::Printer;
-
+use Ref::Util qw/ is_blessed_ref /;
 
 sub process {
     my ($c) = @_;
@@ -89,24 +89,44 @@ sub _process_js {
         result;
     ));
 
-    unless ($result->{success}) {
+    my $respond = sub {
 
-        $log->error("Form '$form_name' falhou:");
-        for my $e (@{ $result->{errors} || []}) {
-            $log->error("$e->{field}: '$e->{message}'");
+        unless ($result->{success}) {
+
+            $log->error("Form '$form_name' falhou:");
+            for my $e (@{ $result->{errors} || []}) {
+                $log->error("$e->{field}: '$e->{message}'");
+            }
         }
+
+        $c->respond_to(
+            json => { json => $result->{success}
+                ? { success => \1, data => $result->{data} }
+                : { success => \0, errors => $result->{errors} }
+            },
+            any => sub {
+                $c->flash("form-$form_name-success", $result->{success});
+                $c->redirect_to($c->req->headers->referrer || '/')
+            }
+        );
+    };
+
+    # delayed (promise) response
+    if (is_blessed_ref $result->{data} && $result->{data}->can('then')) {
+        my $promise = delete $result->{data};
+        $promise->then(sub {
+            $result->{data} = shift;
+            p $result;
+            $respond->();
+        })->catch($respond);
+
+        $c->render_later;
+
+    }
+    else {
+        $respond->();
     }
 
-    $c->respond_to(
-        json => { json => $result->{success}
-            ? { success => \1, data => $result->{data} }
-            : { success => \0, errors => $result->{errors} }
-        },
-        any => sub {
-            $c->flash("form-$form_name-success", $result->{success});
-            $c->redirect_to($c->req->headers->referrer || '/')
-        }
-    );
 }
 
 
