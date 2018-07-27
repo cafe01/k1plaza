@@ -100,7 +100,7 @@ sub _render_menu_item {
         $_->add_class("link-to-$path_class");
 
         if ($item->{route} && $item->{route} =~ /^page-/) {
-            $_->attr('href', $tx->url_for($item->{route})->to_abs->to_string)
+            $_->attr('href', $tx->site_url_for($item->{route}))
         } else {
             $_->remove_attr('href');
         }
