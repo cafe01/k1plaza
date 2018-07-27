@@ -27,6 +27,7 @@ export interface EmailParams {
     body:string
     template:string
     htmlTemplate:string
+    data:any
     attachments:string
 }
 
@@ -41,8 +42,9 @@ export class Email {
     subject = null
     body = null
     template = null
-    htmlTemplate = null
+    html_template = null
     attachments = null
+    template_data:any
 
     /**
     * Novo email.
@@ -83,8 +85,11 @@ export class Email {
                 throw '[Email] está faltando uma das opções para o corpo do email! ("body", "template" e/ou "htmlTemplate")'
 
             this.template = params.template
-            this.htmlTemplate = params.htmlTemplate
+            this.html_template = params.htmlTemplate
         }        
+
+        // data
+        this.template_data = params.data
 
         // attachment
         if (params.attachments) {
@@ -103,10 +108,6 @@ export class Email {
         Object.keys(this)
               .filter((key) => this[key] != undefined)
               .forEach((key) => params[key] = this[key])
-        
-        if (params["htmlTemplate"])
-            params["html_template"] = params["htmlTemplate"]
-            delete params["htmlTemplate"]
 
         // enqueue job
         let jobs = require("k1/jobs")

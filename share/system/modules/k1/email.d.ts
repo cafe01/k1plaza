@@ -21,6 +21,7 @@ export interface EmailParams {
     body: string;
     template: string;
     htmlTemplate: string;
+    data: any;
     attachments: string;
 }
 /**
@@ -33,8 +34,9 @@ export declare class Email {
     subject: any;
     body: any;
     template: any;
-    htmlTemplate: any;
+    html_template: any;
     attachments: any;
+    template_data: any;
     /**
     * Novo email.
     * @param params: Configuração do email a ser enviado.

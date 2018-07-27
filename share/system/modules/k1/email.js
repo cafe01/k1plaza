@@ -15,7 +15,7 @@ var Email = /** @class */ (function () {
         this.subject = null;
         this.body = null;
         this.template = null;
-        this.htmlTemplate = null;
+        this.html_template = null;
         this.attachments = null;
         // from
         this.from = params.from;
@@ -43,8 +43,10 @@ var Email = /** @class */ (function () {
             if (!(params.template || params.htmlTemplate))
                 throw '[Email] está faltando uma das opções para o corpo do email! ("body", "template" e/ou "htmlTemplate")';
             this.template = params.template;
-            this.htmlTemplate = params.htmlTemplate;
+            this.html_template = params.htmlTemplate;
         }
+        // data
+        this.template_data = params.data;
         // attachment
         if (params.attachments) {
             this.attachments = Array.isArray(params.attachments)
@@ -60,9 +62,6 @@ var Email = /** @class */ (function () {
         Object.keys(this)
             .filter(function (key) { return _this[key] != undefined; })
             .forEach(function (key) { return params[key] = _this[key]; });
-        if (params["htmlTemplate"])
-            params["html_template"] = params["htmlTemplate"];
-        delete params["htmlTemplate"];
         // enqueue job
         var jobs = require("k1/jobs");
         return jobs.push("send_email", params);
