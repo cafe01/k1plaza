@@ -18,8 +18,6 @@ services:
     entrypoint: ["docker-entrypoint.sh", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
     networks:
       - k1plaza
-    ports:
-      - "3306:3306"
     volumes:
       - "db-data:/var/lib/mysql"
     environment:

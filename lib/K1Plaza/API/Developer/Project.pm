@@ -101,6 +101,8 @@ sub list {
         }
 
         # widgets
+        my $config_file = $dir->child('app.yml');
+        $self->tx->log->debug("Loading app.yml for '$config_file'");
         my $app_config = $self->tx->app->loadConfigFile($dir->child('app.yml'));
         foreach my $widget_type (keys %{ $app_config->{widgets} || {} }) {
             my $count = keys %{$app_config->{widgets}{$widget_type}};
@@ -119,8 +121,9 @@ sub list {
         $project->{sitemap}{tree} = $sitemap->page_tree;
         my $pages = $project->{sitemap}{list} = [];
         $sitemap->walk('.', sub { 
-            my $item = shift;
-            push @$pages, $item if $item->{route} =~ /^page/;
+            my $route = shift;
+            push @$pages, \%{$route->pattern->defaults} 
+                if $route->name =~ /^page/;
         });
 
         # registered

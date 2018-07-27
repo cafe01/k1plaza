@@ -60,6 +60,14 @@ sub path_to {
 #}
 
 
+sub TO_JSON {
+    my %data =  %{ $_[0] };
+    delete $data{config};
+    \%data;
+}
+
+sub to_json { shift->TO_JSON }
+
 
 1;
 

@@ -71,7 +71,6 @@ sub process {
             callback => sub {
                 my ($img, $uuid, $media) = @_;
 
-                my $style = $img->attr('style') || '';
                 my $url = $self->tx->uri_for_media($media, {
                     crop    => 1,
                     width   => $img->attr('data-width') || $img->attr('width'),
@@ -79,7 +78,7 @@ sub process {
                     zoom    => $img->attr('data-zoom')
                 });
 
-                $img->attr('style', "$style; background-image:url($url);");
+                $img->attr('style', sprintf "%s; background-image:url(%s);", $img->attr('style') || '', $url);
             }
         },
 
