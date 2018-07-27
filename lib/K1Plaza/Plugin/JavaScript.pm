@@ -3,6 +3,7 @@ package K1Plaza::Plugin::JavaScript;
 use Mojo::Base 'Mojolicious::Plugin';
 use Data::Printer;
 use Mojo::Util qw/steady_time /;
+use Mojo::Promise;
 use JavaScript::V8::CommonJS;
 use Q1::Web::Template::Plift::jQuery;
 use Cwd qw/ getcwd /;
@@ -122,6 +123,8 @@ sub _build_context {
 
     my $modules = $js->{context}->modules;
     $modules->{'k1/jquery'} = sub { j(@_) };
+    $modules->{'k1/ua'} = $c->ua;
+    $modules->{'k1/promise'} = { new => sub { Mojo::Promise->new } };
 
     $modules->{'k1/csrf_token'} = $c->csrf_token;
 
