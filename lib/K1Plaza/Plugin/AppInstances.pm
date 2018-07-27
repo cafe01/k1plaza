@@ -138,6 +138,18 @@ sub _around_dispatch {
 	# find app
     if (my $app_instance = $c->api('AppInstance')->instantiate_by_alias($alias)) {
 
+        # redirect to canonical alias
+        if ($app_instance->environment eq 'production' && $app_instance->canonical_alias ne $alias) {
+            
+            my $url = $c->req->url->clone;
+            $url->port($c->req->url->base->port);
+            $url->host($app_instance->canonical_alias);
+            unshift(@{$url->path}, @{$c->req->url->base->path->leading_slash(0)})
+                if $c->stash->{'mojox.facet'};
+
+            return $c->redirect_to($url);
+        }
+
         # set app instannce for this request
         $c->stash->{'__app_instance'} = $app_instance;
 
