@@ -8,7 +8,7 @@ use JSON::XS;
 
 fieldhash my %c;
 
-my $JSON = JSON::XS->new->pretty;
+my $JSON = JSON::XS->new->pretty->allow_blessed;
 
 
 sub new {
@@ -29,8 +29,15 @@ sub push {
     my $task_name = shift or die "[Jobs] missing task name";
     my $c = $c{$self};
     
-    my $id = $c->minion->enqueue($task_name => [@_]);
+    my $metadata = {
+        app_instance => $c->app_instance->to_json,
+        renderer_paths => $c->app->renderer->paths,
+        static_paths => $c->app->static->paths,
+    };
+    
+    my $id = $c->minion->enqueue($task_name, [@_], { notes => $metadata });
     $c->log->info("Adicionado job '$task_name' (id: $id)", $format->(@_));
+    
     $id;
 }
 

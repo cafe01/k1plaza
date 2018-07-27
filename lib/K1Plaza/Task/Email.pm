@@ -41,6 +41,7 @@ sub _helper_send_system_alert_email  {
 
 sub _task_send_email {
     my ($job, $params) = @_;
+    $params->{include_path} ||= $job->info->{notes}->{renderer_paths};
     $job->app->api('Mail')->send_mail($params);
 }
 
