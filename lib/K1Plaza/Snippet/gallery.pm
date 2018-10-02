@@ -4,7 +4,7 @@ use Mojo::Base -base;
 use Data::Printer;
 
 
-has 'name' => 'gallery';
+has 'name' => '';
 has 'template' => 'widget/gallery';
 has 'start' => 0;
 has 'limit';

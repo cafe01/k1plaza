@@ -140,9 +140,7 @@ sub render_snippet {
 
     $plift->run_snippet('gallery', $element, {
         widget => $self,
-        template => $self->template,
-        start => $self->start,
-        limit => $self->limit,
+        map { $_ => $self->$_ } qw/ name template start limit /
     });
 }
 
