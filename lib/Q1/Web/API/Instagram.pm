@@ -89,6 +89,7 @@ sub _scrap_user_medias {
         +{
             display_src => $_->{display_url},
             thumbnail_src => $_->{thumbnail_src},
+            shortcode => $_->{shortcode},
         }
     } map { $_->{node} } @{$user_data->{edge_owner_to_timeline_media}{edges}};
 

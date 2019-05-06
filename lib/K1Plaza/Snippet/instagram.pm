@@ -59,12 +59,15 @@ sub process {
 
         my $tpl = $template->clone();
         my $media = $medias->[$i];
+        p $media;
 
         $tpl->find('.media-thumbnail')->attr( src => $media->{thumbnail_src} );
         $tpl->find('.media-thumbnail-link')->attr( href => $media->{thumbnail_src} );
 
         $tpl->find('.media-image')->attr( src => $media->{display_src} );
         $tpl->find('.media-link')->attr( href => $media->{display_src} );
+
+        $tpl->find('.post-link')->attr( href => sprintf('https://www.instagram.com/p/%s/', $media->{shortcode}) );
 
         $tpl->insert_before($template);
 
