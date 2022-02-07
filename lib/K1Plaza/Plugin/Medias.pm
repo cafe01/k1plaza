@@ -28,9 +28,11 @@ sub _uri_for_media {
 
     # try to expand a string relative uri into a compatible hash
     if (! ref $media) {
-        if ($media =~ /^\/.*?([a-z0-9]{32}).*/) {
+        $c->log->debug("Plain link media.");
+        if ($media =~ /^\/.*?([a-z0-9]{32}).*/ || $media =~ /.*\/\.media\/file\/([a-z0-9]{32}).*/) {
             $media = { uuid => $1, file_mime_type => '' };
         } else {
+            $c->log->debug("Plain link media is incompatible ($media).");
             return $media;
         }
     }

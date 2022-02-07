@@ -27,12 +27,14 @@ var Email = /** @class */ (function () {
         if (!this.to) {
             throw console.error('[Email] opção "to" é obrigatória');
         }
+        // replyTo
+        this['reply-to'] = params.replyTo;
         // subject
         this.subject = params.subject;
         if (!this.subject) {
             throw console.error('[Email] opção "subject" é obrigatória');
         }
-        // body        
+        // body
         this.body = params.body;
         if (typeof this.body == "string" && this.body.length) {
             // error

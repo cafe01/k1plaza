@@ -42,7 +42,7 @@ sub _build_context {
         ? $app_instance->id.($app_instance->deployment_version || '')
         : 'system';
 
-    
+
     # reuse js context
     my $js;
     if ($js = $pool{$context_id}) {
@@ -58,7 +58,7 @@ sub _build_context {
         $js = {
             last => time,
             total => 1,
-            context => JavaScript::V8::CommonJS->new({ 
+            context => JavaScript::V8::CommonJS->new({
                 paths => [@system_module_paths, $app_instance ? $app_instance->base_dir->to_string : ()],
                 v8_params => {
                     time_limit => 5,
@@ -71,7 +71,7 @@ sub _build_context {
         my $use_js_pool = defined $app->config->{reuse_javascript_context}
             ? $app->config->{reuse_javascript_context}
             : $app->mode ne 'development';
-            
+
         if ($use_js_pool) {
 
             # TODO delete contexts used many times
@@ -90,7 +90,7 @@ sub _build_context {
             $pool{$context_id} = $js;
 
             # garbade collect
-            my $task_id; $task_id = Mojo::IOLoop->recurring(300 => sub {
+            my $task_id; $task_id = Mojo::IOLoop->recurring(30 => sub {
                 my $loop = shift;
                 unless ($pool{$context_id}) {
                     $log->debug("JavaScript context '$context_id' is gone, exiting GC task.");
@@ -98,12 +98,9 @@ sub _build_context {
                     return;
                 }
 
-                my $finished = 0;
                 my $time = steady_time;
                 my $js = $pool{$context_id}{context}->c;
-                while (not $finished) {
-                    $finished = $js->idle_notification;
-                }
+                until ($js->idle_notification) {}
 
                 $log->debug(sprintf "JavaScript GC done. (%.03f s)",  steady_time - $time);
             });

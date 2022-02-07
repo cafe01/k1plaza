@@ -4,7 +4,7 @@ declare var require
 import { FormField } from "k1/form/field"
 
 export class RecaptchaField extends FormField {
-   
+
     key: null
     secret: null
 
@@ -17,11 +17,11 @@ export class RecaptchaField extends FormField {
         this.secret = config.secret
 
         if (!this.key) {
-            console.error("Faltando a configuração 'key' para o campo recaptcha.")
+            console.info("Faltando a configuração 'key' para o campo recaptcha.")
         }
 
         if (!this.secret) {
-            console.error("Faltando a configuração 'secret' para o campo recaptcha.")
+            console.info("Faltando a configuração 'secret' para o campo recaptcha.")
         }
 
         // mandatory name
@@ -33,10 +33,10 @@ export class RecaptchaField extends FormField {
         return $('<div class="g-recaptcha" data-key=""/>')
     }
 
-    fillElement(element) {        
+    fillElement(element) {
         if (typeof this.key == "string") {
             element.attr("data-sitekey", this.key)
-        }        
+        }
     }
 
     findElement(rootElement) {

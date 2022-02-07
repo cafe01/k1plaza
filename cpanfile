@@ -49,6 +49,7 @@ requires 'Template::Plugin::Date' => 2.78;
 
 requires 'XML::Feed' => 0.49;
 
+requires 'Net::SMTP' => 3.11;
 requires 'Email::Sender' => 0.120001;
 
 requires 'HTTP::BrowserDetect' => 2.01;
@@ -84,6 +85,7 @@ requires 'Digest::SHA' => 6.01;
 requires 'Try::Tiny' => 0.016;
 requires 'Type::Tiny' => 0.014;
 requires 'Unicode::UTF8' => 0.59;
+requires 'JavaScript::V8' => "== 0.07";
 requires 'JavaScript::V8::CommonJS' => 0.08;
 requires 'YAML::Any' => 0.84;
 requires 'YAML::XS' => 0.41;
@@ -91,6 +93,7 @@ requires 'CSS::Sass' => '3.4.5';
 requires 'CSS::Minifier::XS' => 0.08;
 requires 'Number::Format' => 1.73;
 requires 'JSON::XS' => 3.01;
+requires 'JSON';
 
 requires 'Imager';
 requires 'Imager::File::PNG';

@@ -4,7 +4,7 @@ use Moo;
 use Q1::Utils::ConfigLoader;
 use namespace::autoclean;
 use Data::Dumper;
-use JSON;
+use JSON::XS;
 use Hash::Merge;
 use Path::Class qw(dir);
 use Carp;

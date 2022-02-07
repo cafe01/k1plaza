@@ -8,7 +8,7 @@ RUN apt-get update && \
     dpkg -i /root/mysql-apt.config.deb && \
     mkdir -p /usr/share/man/man1/ && \
     apt-get update && \
-    apt-get install -y --no-install-recommends \
+    apt-get install -y --allow-unauthenticated --no-install-recommends \
         wget \
         sudo \
         ca-certificates \

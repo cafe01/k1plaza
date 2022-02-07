@@ -8,6 +8,7 @@
         "allowJs": false,
         "rootDir": "./",
         "baseUrl": "./",        
-        "outDir": "../modules/"
+        "outDir": "../modules/",
+        "noImplicitAny": false
     }
 }

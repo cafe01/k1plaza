@@ -73,6 +73,10 @@ sub _login_with_token {
 
 sub _login_with_facebook {
     my $c = shift;
+
+    # missing config
+    return unless exists $c->app_instance->config->{facebook} && $c->app_instance->config->{facebook}{app_id};
+
     my $params = $c->req->query_params->to_hash;
 
     my $callback_uri = $c->url_with(

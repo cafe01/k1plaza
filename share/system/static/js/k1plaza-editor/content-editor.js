@@ -53,8 +53,10 @@ imageUploader = function(dialog) {
 initContentEditor = function() {
   var editor;
   if ($('*[data-editable]').length === 0) {
+    console.info("Nenhum item editavel encontrado.");
     return;
   }
+
   ContentTools.IMAGE_UPLOADER = imageUploader;
   ContentTools.StylePalette.add(new ContentTools.Style('Imagem Responsiva', 'img-responsive', ['img']));
   $.get('/js/k1plaza-editor/content-tools/translations/pt-br.json').then(function(translations) {

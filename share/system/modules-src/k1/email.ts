@@ -2,26 +2,31 @@
 declare var require: any
 
 export interface EmailParams {
-    /** 
-     * Rementente do email. 
-     * 
+    /**
+     * Rementente do email.
+     *
      * Exemplo: "Website Foobar | Página Contato"
      */
     from:string
 
-    /** 
-     * Email de destino. 
+    /**
+     * Email de destino.
      */
-    to:string    
+    to:string
 
-    /** 
-     * Assunto do email. 
+    /**
+     * Responder para este email.
+     */
+    replyTo:string
+
+    /**
+     * Assunto do email.
      */
     subject:string
 
-    /** 
-     * Corpo do email. 
-     * 
+    /**
+     * Corpo do email.
+     *
      * *ATENÇÃO:* Não pode ser utilizado junto com as opções `template` ou `htmlTemplate`
      */
     body:string
@@ -33,10 +38,10 @@ export interface EmailParams {
 
 /**
 * Utilize essa classe para criar e enviar emails.
-* 
+*
 */
 export class Email {
-    
+
     from = null
     to = null
     subject = null
@@ -64,16 +69,19 @@ export class Email {
             throw console.error('[Email] opção "to" é obrigatória')
         }
 
+        // replyTo
+        this['reply-to'] = params.replyTo
+
         // subject
         this.subject = params.subject
         if (!this.subject) {
             throw console.error('[Email] opção "subject" é obrigatória')
         }
-        
-        // body        
+
+        // body
         this.body = params.body
-        if (typeof this.body == "string" && this.body.length) { 
-            
+        if (typeof this.body == "string" && this.body.length) {
+
             // error
             if (params.template || params.htmlTemplate)
                 throw console.error('[Email] opção "body" não pode ser utilizada junto com "template" ou "htmlTemplate"')
@@ -86,7 +94,7 @@ export class Email {
 
             this.template = params.template
             this.html_template = params.htmlTemplate
-        }        
+        }
 
         // data
         this.template_data = params.data
@@ -102,7 +110,7 @@ export class Email {
     }
 
     send() {
-        
+
         // prepare params
         let params = {}
         Object.keys(this)

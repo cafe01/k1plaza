@@ -81,7 +81,7 @@ sub process {
         if $data->{errors};
 
     my @posts = $self->widget->render_similar ? @{$data->{items}[0]{similar_posts}} : @{$data->{items}};
-
+    
     my $post_schema = {
         title   => { '.blog-post-title' => 'text, @title' },
         url     => { '.blog-post-link' => '@href' },
@@ -98,6 +98,7 @@ sub process {
                 my $h = $img->attr('data-height') || $img->attr('height');
                 my $zoom = $img->attr('data-zoom');
                 $img->remove_attr('data-width data-height data-zoom');
+                $tx->log->debug("Blog thumbnail URL ($w x $h): $url");
                 my $src = $url ? $tx->uri_for_media($url, { crop => 1, width => $w, height => $h, zoom => $zoom })
                                : $default_thumb_src;
 

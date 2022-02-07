@@ -10,6 +10,10 @@ export interface EmailParams {
      */
     to: string;
     /**
+     * Responder para este email.
+     */
+    replyTo: string;
+    /**
      * Assunto do email.
      */
     subject: string;

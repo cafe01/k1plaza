@@ -20,10 +20,10 @@ var RecaptchaField = /** @class */ (function (_super) {
         _this.key = config.key;
         _this.secret = config.secret;
         if (!_this.key) {
-            console.error("Faltando a configuração 'key' para o campo recaptcha.");
+            console.info("Faltando a configuração 'key' para o campo recaptcha.");
         }
         if (!_this.secret) {
-            console.error("Faltando a configuração 'secret' para o campo recaptcha.");
+            console.info("Faltando a configuração 'secret' para o campo recaptcha.");
         }
         // mandatory name
         _this.name = 'g-recaptcha-response';

@@ -67,7 +67,7 @@ sub _redirect_to_login {
     $login_url->query({ continue => $c->req->url->path->to_string }) if $opt{continue};
 
     if (my $auth_host = $c->app->config->{auth_host}) {
-        $login_url = $login_url->to_abs(Mojo::URL->new("http://$auth_host/"));
+        $login_url = $login_url->to_abs(Mojo::URL->new("https://$auth_host/"));
         $login_url->query([domain => $c->app_instance->current_alias]);
     }
 
@@ -123,8 +123,7 @@ sub _verify_login_token {
 
 
     unless ( $app_id && $app_id == $app_instance->id
-            && $timestamp < (time + 15)
-            && $ipaddress && $ipaddress eq $c->tx->remote_address ) {
+            && $timestamp < (time + 15)) {
 
         $c->log->warn(sprintf "failed to verify_login_token():\n"
             ."tok data: app=$app_id, timestamp=$timestamp, ip=$ipaddress, user=$user_id\n"
