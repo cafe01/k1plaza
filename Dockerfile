@@ -30,7 +30,7 @@ RUN apt-get update && \
         apt-get clean -y
 
 COPY ./cpanfile /root
-RUN wget -O- http://git.io/cpm | perl - install --global --cpanfile=/root/cpanfile && \
+RUN wget -O- https://raw.githubusercontent.com/skaji/cpm/main/cpm | perl - install --global --cpanfile=/root/cpanfile --show-build-log-on-failure && \
         rm -rf /root/.perl-cpm/* /root/.cpanm/* && \
         apt-get remove build-essential -y && \
         apt-get autoremove -y

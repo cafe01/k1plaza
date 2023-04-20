@@ -7,7 +7,7 @@ requires 'EV' => 4.22;
 requires 'IO::Socket::Socks' => 0.74;
 requires 'IO::Socket::SSL' => 2.056;
 requires 'Net::DNS::Native' => 0.18;
-requires 'Mojolicious' => '== 7.82';
+requires 'Mojolicious' => '== 9.21';
 
 # Mojolicous Plugins
 requires 'Mojolicious::Plugin::CHI';
