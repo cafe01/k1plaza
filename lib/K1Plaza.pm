@@ -183,12 +183,19 @@ sub _setup_helpers {
         my ($c, $path, $opt) = @_;
         $path =~ s!^\/!!;
         my $url = Mojo::URL->new($path);
+        my $use_cdn_host = $opt->{use_cdn_host} // 1;
 
-        my $base = $c->has_app_instance && $c->app->config->{cdn_host}
+        my $base = $use_cdn_host && $c->has_app_instance && $c->app->config->{cdn_host}
             ? Mojo::URL->new(sprintf 'http://%s/%s/', $c->app->config->{cdn_host}, $c->app_instance->current_alias)
             : $c->req->url->base;
 
         $base->port($c->req->url->base->port);
+        $base->scheme($c->req->url->base->scheme);
+
+        # set scheme to the value of the 'X-Forwarded-Proto' header if it exists
+        $base->scheme($c->req->headers->header('X-Forwarded-Proto'))
+            if $c->req->headers->header('X-Forwarded-Proto');
+
         $url->to_abs($base);
     });
 
